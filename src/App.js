@@ -49,6 +49,18 @@ import AllBlogs from './pages/blogs/AllBlogs';
 import { Ownrec } from './pages/recipe/Ownrec';
 import Owntip from './pages/tips/Owntip';
 import EditProduct from './pages/account/EditProduct';
+import CropYieldPredictor from './Components/CropYieldPredictor';
+import Sellerhome from './pages/Sellerhome';
+import { SeedList } from './pages/product/SeedList';
+import { FertilizersList } from './pages/product/FertilizersList ';
+import SellerProfile from './pages/account/SellerProfile';
+import Viewbuyer from './pages/Viewbuyer';
+import SellerComplaints from './pages/complaint/SellerComplaint';
+import UserComplaints from './pages/complaint/UserComplaints';
+import AdminComplaints from './pages/complaint/AdminComplaints';
+import SendAnnouncement from './pages/Annoucement/SendAnnouncement';
+import ViewAnnouncements from './pages/Annoucement/ViewAnnoucement';
+import ViewAnnouncementsbyadmin from './pages/Annoucement/ViewAnnoucementbyadmin';
 
 
 
@@ -96,10 +108,20 @@ function App() {
     <Route path='/ownrec'element={(<Ownrec/>)}/>
     <Route path='/owntip'element={(<Owntip/>)}/>
     <Route path="/editproduct/:productId" element={<EditProduct />} />
+    <Route path="/sellerhome" element={<Sellerhome/>} />
+    <Route path="/seeds" element={<SeedList/>} />
+    <Route path="/fertilizers" element={<FertilizersList/>} />
+    <Route path="/sellerprofile" element={<SellerProfile/>} />
+    <Route path="/sellercom" element={<SellerComplaints/>} />
+    <Route path="/ucom" element={<UserComplaints/>} />
+    <Route path="/acom" element={<AdminComplaints/>} />
+    <Route path="/senda" element={<SendAnnouncement/>} />
+    <Route path="/viewa" element={<ViewAnnouncements/>} />
+    <Route path="/viewaa" element={<ViewAnnouncementsbyadmin/>} />
     </Route>
     
    
-
+    <Route path='/ml'element={(<CropYieldPredictor/>)}/>
     <Route element={<AdminRoute />}>
     <Route path='/adminhome'element={(<Adminhome/>)}/>
     <Route path='/complaintList'element={(<ComplaintList/>)}/>
@@ -113,6 +135,7 @@ function App() {
     <Route path='/own/:id'element={(<UserDetails/>)}/>
     <Route path='/soldproducts/:userId'element={(<SoldProducts/>)}/>
     <Route path='/rcor'element={(<ReceivedOrders/>)}/>
+    <Route path='/buyer'element={(<Viewbuyer/>)}/>
     
     </Route>
     

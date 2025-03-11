@@ -4,7 +4,7 @@ import NavBar from "../../Components/Layout/NavBar";
 import { Link } from "react-router-dom";
 import NavSeller from "../../Components/Layout/NavSeller";
 
-export const ProductList = () => {
+export const FertilizersList = () => {
   const [products, setProducts] = useState([]);
   const [selectedProduct, setSelectedProduct] = useState(null);
   const [orderData, setOrderData] = useState({
@@ -31,13 +31,8 @@ export const ProductList = () => {
   const loggedInUserId = localStorage.getItem("userid");
 
   const categories = [
-    "Fruits",
-    "Vegetables",
-    "Meat and Poultry",
-    "Dairy Products",
-    "Grains and Legumes",
-    "Processed Foods",
-    "Non-Food Items",
+    "Organic Fertilizers",
+    "Synthetic (Inorganic) Fertilizers",
   ];
 
   useEffect(() => {
@@ -158,12 +153,12 @@ export const ProductList = () => {
     setSelectedCategory(category); // Set the selected category
   };
 
-  // Updated filteredProducts logic to only show Organic Products
+  // Updated filteredProducts logic to only show Fertilizers and use fertilizercategory
   const filteredProducts = products.filter((product) => {
     const matchesSearch = product.pname.toLowerCase().includes(searchTerm.toLowerCase());
-    const matchesCategory = selectedCategory ? product.category === selectedCategory : true;
-    const isOrganicProduct = product.productype === "Organic Product"; // New condition
-    return matchesSearch && matchesCategory && product.userId !== loggedInUserId && isOrganicProduct;
+    const matchesCategory = selectedCategory ? product.fertilizercategory === selectedCategory : true; // Use fertilizercategory
+    const isFertilizerProduct = product.productype === "Fertilizers"; // New condition
+    return matchesSearch && matchesCategory && product.userId !== loggedInUserId && isFertilizerProduct;
   });
 
   const handleReadFeedback = async (product) => {
@@ -268,14 +263,14 @@ export const ProductList = () => {
     textAlign: "center",
     cursor: "pointer",
     margin: "10px",
-    flex: "1 1 calc(14.28% - 20px)", // 7 cards in a row
-    maxWidth: "calc(14.28% - 20px)", // 7 cards in a row
+    flex: "1 1 calc(50% - 20px)", // 2 cards in a row
+    maxWidth: "calc(50% - 20px)", // 2 cards in a row
   };
 
   return (
     <div style={pageStyle}>
       <NavBar/>
-      <h1 style={headerStyle}>Browse Organic Products</h1>
+      <h1 style={headerStyle}>Browse Fertilizers</h1>
 
       {/* Category Cards */}
       <div style={{ display: "flex", flexWrap: "wrap", marginBottom: "20px" }}>
@@ -292,7 +287,7 @@ export const ProductList = () => {
 
       <input
         type="text"
-        placeholder="Search for products..."
+        placeholder="Search for fertilizers..."
         value={searchTerm}
         onChange={(e) => setSearchTerm(e.target.value)}
         style={{

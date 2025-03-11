@@ -4,13 +4,17 @@ import { useNavigate } from "react-router-dom";
 import NavBar from "../Components/Layout/NavBar";
 import { Link } from 'react-router-dom';
 import Select from 'react-select'; // Import react-select
+import NavSeller from "../Components/Layout/NavSeller";
 
 const Fconfirmation = () => {
     const [data, setData] = useState({
         name: "",
         email: "",
         phone: "",
-        category: "", // Single category
+        productype: [], // Changed to array for multiple selections
+        category: [], // Single category (for Organic Product)
+        seedcategory: [], // Multiple seed categories (for Seeds)
+        fertilizercategory: [], // Multiple fertilizer categories (for Fertilizers)
         idProof: null,
         termsAccepted: false,
     });
@@ -24,8 +28,17 @@ const Fconfirmation = () => {
 
     const navigate = useNavigate();
 
-    // Categories for the dropdown
-    const categories = [
+    // Product type options with "All" option
+    const productTypeOptions = [
+        { value: "All", label: "All" },
+        { value: "Organic Product", label: "Organic Product" },
+        { value: "Seeds", label: "Seeds" },
+        { value: "Fertilizers", label: "Fertilizers" },
+    ];
+
+    // Categories for Organic Product with "All" option
+    const categoryOptions = [
+        { value: "All", label: "All" },
         { value: "Fruits", label: "Fruits" },
         { value: "Vegetables", label: "Vegetables" },
         { value: "Meat and Poultry", label: "Meat and Poultry" },
@@ -33,7 +46,24 @@ const Fconfirmation = () => {
         { value: "Grains and Legumes", label: "Grains and Legumes" },
         { value: "Processed Foods", label: "Processed Foods" },
         { value: "Non-Food Items", label: "Non-Food Items" },
+    ];
+
+    // Seed categories for Seeds with "All" option
+    const seedCategoryOptions = [
         { value: "All", label: "All" },
+        { value: "Vegetable Seed", label: "Vegetable Seed" },
+        { value: "Fruite Seed", label: "Fruite Seed" },
+        { value: "Flower Seed", label: "Flower Seed" },
+        { value: "Field Crop Seed", label: "Field Crop Seed" },
+        { value: "Oil Seeds Crop", label: "Oil Seeds Crop" },
+        { value: "Fodder Crop", label: "Fodder Crop" },
+    ];
+
+    // Fertilizer categories for Fertilizers with "All" option
+    const fertilizerCategoryOptions = [
+        { value: "All", label: "All" },
+        { value: "Organic Fertilizers", label: "Organic Fertilizers" },
+        { value: "Synthetic (Inorganic) Fertilizers", label: "Synthetic (Inorganic) Fertilizers" },
     ];
 
     useEffect(() => {
@@ -46,7 +76,10 @@ const Fconfirmation = () => {
 
                     if (response.data.isRegistered) {
                         setIsRegistered(true);
-                        setUserDetails(response.data.userDetails);
+                        // Ensure productype is an array
+                        const userDetails = response.data.userDetails;
+                        userDetails.productype = Array.isArray(userDetails.productype) ? userDetails.productype : [userDetails.productype];
+                        setUserDetails(userDetails);
 
                         const statusResponse = await axios.get(`http://localhost:7000/user/status/${userId}`);
                         setStatus(statusResponse.data.status);
@@ -70,8 +103,27 @@ const Fconfirmation = () => {
         setData({ ...data, [e.target.name]: e.target.value });
     };
 
-    const handleCategoryChange = (selectedOption) => {
-        setData({ ...data, category: selectedOption.value });
+    // Handle multiple product type selections
+    const handleProductTypeChange = (selectedOptions) => {
+        setData({ 
+            ...data, 
+            productype: selectedOptions.map(option => option.value),
+        });
+    };
+
+    // Handle category selections
+    const handleCategoryChange = (selectedOptions) => {
+        setData({ ...data, category: selectedOptions.map(option => option.value) });
+    };
+
+    // Handle seed category selections
+    const handleSeedCategoryChange = (selectedOptions) => {
+        setData({ ...data, seedcategory: selectedOptions.map(option => option.value) });
+    };
+
+    // Handle fertilizer category selections
+    const handleFertilizerCategoryChange = (selectedOptions) => {
+        setData({ ...data, fertilizercategory: selectedOptions.map(option => option.value) });
     };
 
     const handleFileChange = (e) => {
@@ -94,7 +146,10 @@ const Fconfirmation = () => {
         formData.append("name", data.name);
         formData.append("email", data.email);
         formData.append("phone", data.phone);
-        formData.append("category", data.category); // Send single category
+        formData.append("productype", JSON.stringify(data.productype)); // Send product type as JSON
+        formData.append("category", JSON.stringify(data.category)); // Send category as JSON
+        formData.append("seedcategory", JSON.stringify(data.seedcategory)); // Send seedcategory as JSON
+        formData.append("fertilizercategory", JSON.stringify(data.fertilizercategory)); // Send fertilizercategory as JSON
         formData.append("idProof", data.idProof);
         formData.append("termsAccepted", data.termsAccepted);
         formData.append("user", localStorage.getItem("userid"));
@@ -117,7 +172,10 @@ const Fconfirmation = () => {
                     name: "",
                     email: "",
                     phone: "",
-                    category: "", // Reset category field
+                    productype: [], // Reset product type
+                    category: [], // Reset category
+                    seedcategory: [], // Reset seedcategory
+                    fertilizercategory: [], // Reset fertilizercategory
                     idProof: null,
                     termsAccepted: false,
                 });
@@ -159,7 +217,7 @@ const Fconfirmation = () => {
 
     return (
         <div style={{ padding: "20px", fontFamily: "Arial, sans-serif" }}>
-            <NavBar />
+            <NavSeller/>
             <h1 style={headerStyle}>Farmer Registration</h1> {/* Header with headerStyle applied */}
 
             {isRegistered && userDetails ? (
@@ -168,7 +226,10 @@ const Fconfirmation = () => {
                     <p><strong>Name:</strong> {userDetails.name}</p>
                     <p><strong>Email:</strong> {userDetails.email}</p>
                     <p><strong>Phone:</strong> {userDetails.phone}</p>
-                    <p><strong>Category:</strong> {userDetails.category}</p> {/* Display single category */}
+                    <p><strong>Product Type:</strong> {Array.isArray(userDetails.productype) ? userDetails.productype.join(", ") : userDetails.productype}</p>
+                    <p><strong>Organic Product Category:</strong> {Array.isArray(userDetails.category) ? userDetails.category.join(", ") : userDetails.category}</p>
+                    <p><strong>Seed Category:</strong> {Array.isArray(userDetails.seedcategory) ? userDetails.seedcategory.join(", ") : userDetails.seedcategory}</p>
+                    <p><strong>Fertilizer Category:</strong> {Array.isArray(userDetails.fertilizercategory) ? userDetails.fertilizercategory.join(", ") : userDetails.fertilizercategory}</p>
                     <p><strong>ID Proof:</strong> <a href={`http://localhost:7000${userDetails.idProof}`} target="_blank" rel="noopener noreferrer">View</a></p>
                     <p><strong>Status:</strong> {status}</p>
 
@@ -207,14 +268,14 @@ const Fconfirmation = () => {
                     <input type="email" name="email" placeholder="Email" value={data.email} onChange={handleChange} required style={{ marginBottom: "10px", width: "100%", padding: "8px" }} />
                     <input type="text" name="phone" placeholder="Phone" value={data.phone} onChange={handleChange} required style={{ marginBottom: "10px", width: "100%", padding: "8px" }} />
 
-                    {/* Single-Select Category Dropdown */}
+                    {/* Product Type Dropdown (Multiple Selection) */}
                     <Select
-                        name="category"
-                        options={categories}
-                        value={categories.find((cat) => cat.value === data.category)}
-                        onChange={handleCategoryChange}
-                        placeholder="Select Category"
-                        required
+                        name="productype"
+                        options={productTypeOptions}
+                        value={productTypeOptions.filter((option) => data.productype.includes(option.value))}
+                        onChange={handleProductTypeChange}
+                        placeholder="Select Product Type"
+                        isMulti
                         styles={{
                             control: (base) => ({
                                 ...base,
@@ -225,6 +286,69 @@ const Fconfirmation = () => {
                             }),
                         }}
                     />
+
+                    {/* Category Dropdown (Conditional Rendering) */}
+                    {data.productype.includes("Organic Product") && (
+                        <Select
+                            name="category"
+                            options={categoryOptions}
+                            value={categoryOptions.filter((option) => data.category.includes(option.value))}
+                            onChange={handleCategoryChange}
+                            placeholder="Select Categories"
+                            isMulti
+                            styles={{
+                                control: (base) => ({
+                                    ...base,
+                                    marginBottom: "10px",
+                                    padding: "8px",
+                                    borderRadius: "5px",
+                                    border: "1px solid #ccc",
+                                }),
+                            }}
+                        />
+                    )}
+
+                    {/* Seed Category Dropdown (Conditional Rendering) */}
+                    {data.productype.includes("Seeds") && (
+                        <Select
+                            name="seedcategory"
+                            options={seedCategoryOptions}
+                            value={seedCategoryOptions.filter((option) => data.seedcategory.includes(option.value))}
+                            onChange={handleSeedCategoryChange}
+                            placeholder="Select Seed Categories"
+                            isMulti
+                            styles={{
+                                control: (base) => ({
+                                    ...base,
+                                    marginBottom: "10px",
+                                    padding: "8px",
+                                    borderRadius: "5px",
+                                    border: "1px solid #ccc",
+                                }),
+                            }}
+                        />
+                    )}
+
+                    {/* Fertilizer Category Dropdown (Conditional Rendering) */}
+                    {data.productype.includes("Fertilizers") && (
+                        <Select
+                            name="fertilizercategory"
+                            options={fertilizerCategoryOptions}
+                            value={fertilizerCategoryOptions.filter((option) => data.fertilizercategory.includes(option.value))}
+                            onChange={handleFertilizerCategoryChange}
+                            placeholder="Select Fertilizer Categories"
+                            isMulti
+                            styles={{
+                                control: (base) => ({
+                                    ...base,
+                                    marginBottom: "10px",
+                                    padding: "8px",
+                                    borderRadius: "5px",
+                                    border: "1px solid #ccc",
+                                }),
+                            }}
+                        />
+                    )}
 
                     <input type="file" name="idProof" onChange={handleFileChange} required style={{ marginBottom: "10px" }} />
 

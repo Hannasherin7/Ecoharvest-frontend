@@ -4,7 +4,7 @@ import NavBar from "../../Components/Layout/NavBar";
 import { Link } from "react-router-dom";
 import NavSeller from "../../Components/Layout/NavSeller";
 
-export const ProductList = () => {
+export const SeedList = () => {
   const [products, setProducts] = useState([]);
   const [selectedProduct, setSelectedProduct] = useState(null);
   const [orderData, setOrderData] = useState({
@@ -31,13 +31,12 @@ export const ProductList = () => {
   const loggedInUserId = localStorage.getItem("userid");
 
   const categories = [
-    "Fruits",
-    "Vegetables",
-    "Meat and Poultry",
-    "Dairy Products",
-    "Grains and Legumes",
-    "Processed Foods",
-    "Non-Food Items",
+    "Vegetable Seed",
+    "Fruite Seed",
+    "Flower Seed",
+    "Field Crop Seed",
+    "Oil Seeds Crop",
+    "Fodder Crop",
   ];
 
   useEffect(() => {
@@ -158,12 +157,12 @@ export const ProductList = () => {
     setSelectedCategory(category); // Set the selected category
   };
 
-  // Updated filteredProducts logic to only show Organic Products
+  // Updated filteredProducts logic to only show Seeds and use seedcategory
   const filteredProducts = products.filter((product) => {
     const matchesSearch = product.pname.toLowerCase().includes(searchTerm.toLowerCase());
-    const matchesCategory = selectedCategory ? product.category === selectedCategory : true;
-    const isOrganicProduct = product.productype === "Organic Product"; // New condition
-    return matchesSearch && matchesCategory && product.userId !== loggedInUserId && isOrganicProduct;
+    const matchesCategory = selectedCategory ? product.seedcategory === selectedCategory : true; // Use seedcategory
+    const isSeedProduct = product.productype === "Seeds"; // New condition
+    return matchesSearch && matchesCategory && product.userId !== loggedInUserId && isSeedProduct;
   });
 
   const handleReadFeedback = async (product) => {
@@ -268,14 +267,13 @@ export const ProductList = () => {
     textAlign: "center",
     cursor: "pointer",
     margin: "10px",
-    flex: "1 1 calc(14.28% - 20px)", // 7 cards in a row
-    maxWidth: "calc(14.28% - 20px)", // 7 cards in a row
+    flex: "1 1 calc(16.66% - 20px)", // 6 cards in a row
+    maxWidth: "calc(16.66% - 20px)", // 6 cards in a row
   };
-
   return (
     <div style={pageStyle}>
       <NavBar/>
-      <h1 style={headerStyle}>Browse Organic Products</h1>
+      <h1 style={headerStyle}>Browse Seeds</h1>
 
       {/* Category Cards */}
       <div style={{ display: "flex", flexWrap: "wrap", marginBottom: "20px" }}>
@@ -292,7 +290,7 @@ export const ProductList = () => {
 
       <input
         type="text"
-        placeholder="Search for products..."
+        placeholder="Search for seeds..."
         value={searchTerm}
         onChange={(e) => setSearchTerm(e.target.value)}
         style={{

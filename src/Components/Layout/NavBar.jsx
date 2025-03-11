@@ -47,14 +47,14 @@ const NavBar = () => {
                   <li><a className="dropdown-item text-dark" href="/viewtips">Storage Tips</a></li>
                 </ul>
               </li>
-              <li className="nav-item dropdown">
-                <a className="nav-link dropdown-toggle text-white" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">
-                  What would you like to do?
-                </a>
-                <ul className="dropdown-menu bg-white">
-                  <li><a className="dropdown-item text-dark" href="/frmr">Sell Your Product</a></li>
-                  <li><a className="dropdown-item text-dark" href="/buy">Browse Available Products</a></li>
-                </ul>
+              <li className="nav-item">
+                <a className="nav-link text-white" href="/seeds">Seeds</a>
+              </li>
+              <li className="nav-item">
+                <a className="nav-link text-white" href="/buy">Organic Products</a>
+              </li>
+              <li className="nav-item">
+                <a className="nav-link text-white" href="/fertilizers">Fertilizers</a>
               </li>
               <li className="nav-item dropdown">
                 <a className="nav-link dropdown-toggle text-white" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">
@@ -64,9 +64,6 @@ const NavBar = () => {
                   <li><a className="dropdown-item text-dark" href="/addblog">Upload Your Blogs</a></li>
                   <li><a className="dropdown-item text-dark" href="/myblog">View Your Blogs</a></li>
                 </ul>
-              </li>
-              <li className="nav-item">
-                <a className="nav-link text-white" href="/complaintadd">Complaints</a>
               </li>
               <li className="nav-item">
                 <a className="nav-link text-white" href="/own/:id">Profile</a>

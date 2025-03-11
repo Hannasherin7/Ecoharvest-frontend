@@ -9,8 +9,24 @@ const UserOrders = () => {
   const [feedbackVisible, setFeedbackVisible] = useState({});
   const [feedbackText, setFeedbackText] = useState({});
   const [feedbackRating, setFeedbackRating] = useState({});
-  const [editingFeedbackId, setEditingFeedbackId] = useState(null); // Track which feedback is being edited
-  const [editedFeedback, setEditedFeedback] = useState({ text: "", rating: "" }); // Store edited feedback data
+  const [editingFeedbackId, setEditingFeedbackId] = useState(null);
+  const [editedFeedback, setEditedFeedback] = useState({ text: "", rating: "" });
+
+  // Complaint states
+  const [complaintVisible, setComplaintVisible] = useState({});
+  const [complaintData, setComplaintData] = useState({
+    description: "",
+    category: "Damaged Product",
+    resolutionRequest: "Replacement",
+    evidence: null,
+  });
+  const [editingComplaintId, setEditingComplaintId] = useState(null);
+  const [editedComplaint, setEditedComplaint] = useState({
+    description: "",
+    category: "Damaged Product",
+    resolutionRequest: "Replacement",
+    evidence: null,
+  });
 
   useEffect(() => {
     const fetchUserOrders = async () => {
@@ -47,13 +63,14 @@ const UserOrders = () => {
 
   const statusSteps = ["Order placed", "In transit", "Out of delivery", "delivered"];
 
+  // Feedback handlers
   const handleAddFeedback = (orderId) => {
     setFeedbackVisible((prev) => ({ ...prev, [orderId]: true }));
   };
 
   const handleCloseFeedback = (orderId) => {
     setFeedbackVisible((prev) => ({ ...prev, [orderId]: false }));
-    setEditingFeedbackId(null); // Reset editing state
+    setEditingFeedbackId(null);
   };
 
   const handleSubmitFeedback = async (orderId, productId) => {
@@ -117,10 +134,131 @@ const UserOrders = () => {
             ),
           }))
         );
-        setEditingFeedbackId(null); // Stop editing
+        setEditingFeedbackId(null);
       }
     } catch (err) {
       console.error("Error updating feedback:", err);
+    }
+  };
+
+  // Complaint handlers
+  const handleAddComplaint = async (orderId) => {
+    const userId = localStorage.getItem("userid");
+    const productId = userOrders.find((order) => order._id === orderId)?.productId;
+
+    try {
+      const response = await axios.get(
+        `http://localhost:7000/check-existing-complaint?userId=${userId}&productId=${productId}`,
+        {
+          headers: {
+            Authorization: `Bearer ${localStorage.getItem("token")}`,
+          },
+        }
+      );
+
+      if (response.data.hasExistingComplaint) {
+        alert("You have already submitted a complaint for this product. If you want to know about your complaint, please go to your complaints.");
+      } else {
+        setComplaintVisible((prev) => ({ ...prev, [orderId]: true }));
+      }
+    } catch (err) {
+      console.error("Error checking existing complaint:", err);
+    }
+  };
+
+  const handleCloseComplaint = (orderId) => {
+    setComplaintVisible((prev) => ({ ...prev, [orderId]: false }));
+    setEditingComplaintId(null);
+  };
+
+  const handleSubmitComplaint = async (orderId, productId) => {
+    if (!complaintData.description || !complaintData.category || !complaintData.resolutionRequest) {
+      alert("Please fill all required fields.");
+      return;
+    }
+
+    const formData = new FormData();
+    formData.append("description", complaintData.description);
+    formData.append("category", complaintData.category);
+    formData.append("resolutionRequest", complaintData.resolutionRequest);
+    formData.append("userId", localStorage.getItem("userid"));
+    formData.append("productId", productId);
+
+    // Append the image file
+    if (complaintData.evidence) {
+      formData.append("evidence", complaintData.evidence);
+    }
+
+    try {
+      const response = await axios.post(
+        "http://localhost:7000/submit-complaint",
+        formData,
+        {
+          headers: {
+            "Content-Type": "multipart/form-data",
+            Authorization: `Bearer ${localStorage.getItem("token")}`,
+          },
+        }
+      );
+
+      if (response.data) {
+        setComplaintVisible((prev) => ({ ...prev, [orderId]: false }));
+        setUserOrders((prevOrders) =>
+          prevOrders.map((order) =>
+            order._id === orderId
+              ? {
+                  ...order,
+                  complaints: Array.isArray(order.complaints)
+                    ? [...order.complaints, response.data.complaint]
+                    : [response.data.complaint],
+                }
+              : order
+          )
+        );
+      }
+    } catch (err) {
+      console.error("Error submitting complaint:", err);
+      alert("You have already submitted a complaint for this product.");
+    }
+  };
+
+  const handleEditComplaint = (complaint) => {
+    setEditingComplaintId(complaint._id);
+    setEditedComplaint({
+      description: complaint.description,
+      category: complaint.category,
+      resolutionRequest: complaint.resolutionRequest,
+      evidence: complaint.evidence,
+    });
+  };
+
+  const handleSaveComplaint = async (complaintId) => {
+    try {
+      const response = await axios.put(
+        `http://localhost:7000/update-complaint/${complaintId}`,
+        editedComplaint,
+        {
+          headers: {
+            Authorization: `Bearer ${localStorage.getItem("token")}`,
+          },
+        }
+      );
+
+      if (response.data.message === "Complaint updated successfully") {
+        setUserOrders((prevOrders) =>
+          prevOrders.map((order) => ({
+            ...order,
+            complaints: order.complaints.map((comp) =>
+              comp._id === complaintId
+                ? { ...comp, ...editedComplaint }
+                : comp
+            ),
+          }))
+        );
+        setEditingComplaintId(null);
+      }
+    } catch (error) {
+      console.error("Error updating complaint:", error);
     }
   };
 
@@ -140,11 +278,17 @@ const UserOrders = () => {
       {userOrders.length > 0 ? (
         <div style={styles.cardsContainer}>
           {userOrders.map((order, index) => {
-            // Check if the current user has already submitted feedback
             const userFeedback = Array.isArray(order.feedbacks)
               ? order.feedbacks.find(
                   (feedback) =>
                     feedback.userId === localStorage.getItem("userid")
+                )
+              : null;
+
+            const userComplaint = Array.isArray(order.complaints)
+              ? order.complaints.find(
+                  (complaint) =>
+                    complaint.userId === localStorage.getItem("userid")
                 )
               : null;
 
@@ -183,7 +327,7 @@ const UserOrders = () => {
                 </div>
                 {order.status === "delivered" && (
                   <div>
-                    {/* Show "Feedback" button by default */}
+                    {/* Feedback Section */}
                     {!feedbackVisible[order._id] && (
                       <button
                         onClick={() => handleAddFeedback(order._id)}
@@ -193,14 +337,11 @@ const UserOrders = () => {
                       </button>
                     )}
 
-                    {/* Show feedback or form only when the "Feedback" button is clicked */}
                     {feedbackVisible[order._id] && (
                       <>
                         {userFeedback ? (
-                          // Show feedback if the user has already submitted it
                           <div>
                             {editingFeedbackId === userFeedback._id ? (
-                              // Edit feedback form
                               <div>
                                 <textarea
                                   value={editedFeedback.text}
@@ -244,7 +385,6 @@ const UserOrders = () => {
                                 </button>
                               </div>
                             ) : (
-                              // Display feedback with edit button
                               <div>
                                 <p>
                                   <strong>Your Feedback:</strong>{" "}
@@ -264,7 +404,6 @@ const UserOrders = () => {
                             )}
                           </div>
                         ) : (
-                          // Show feedback form if the user hasn't submitted feedback
                           <div>
                             <textarea
                               placeholder="Enter your feedback"
@@ -309,6 +448,180 @@ const UserOrders = () => {
                         )}
                       </>
                     )}
+
+                    {/* Complaint Section */}
+                    {!complaintVisible[order._id] && !userComplaint && (
+                      <button
+                        onClick={() => handleAddComplaint(order._id)}
+                        style={styles.complaintButton}
+                      >
+                        Submit Complaint
+                      </button>
+                    )}
+
+                    {complaintVisible[order._id] && !userComplaint && (
+                      <div>
+                        <textarea
+                          placeholder="Complaint Description"
+                          value={complaintData.description}
+                          onChange={(e) =>
+                            setComplaintData({
+                              ...complaintData,
+                              description: e.target.value,
+                            })
+                          }
+                          style={styles.textarea}
+                        />
+                        <select
+                          value={complaintData.category}
+                          onChange={(e) =>
+                            setComplaintData({
+                              ...complaintData,
+                              category: e.target.value,
+                            })
+                          }
+                          style={styles.select}
+                        >
+                          <option value="Damaged Product">Damaged Product</option>
+                          <option value="Late Delivery">Late Delivery</option>
+                          <option value="Wrong Product">Wrong Product</option>
+                          <option value="Poor Quality">Poor Quality</option>
+                          <option value="Missing Items">Missing Items</option>
+                          <option value="Others">Others</option>
+                        </select>
+                        <select
+                          value={complaintData.resolutionRequest}
+                          onChange={(e) =>
+                            setComplaintData({
+                              ...complaintData,
+                              resolutionRequest: e.target.value,
+                            })
+                          }
+                          style={styles.select}
+                        >
+                          <option value="Replacement">Replacement</option>
+                          <option value="Refund">Refund</option>
+                          <option value="Return">Return</option>
+                          <option value="Exchange">Exchange</option>
+                          <option value="Other">Other</option>
+                        </select>
+                        <input
+                          type="file"
+                          onChange={(e) =>
+                            setComplaintData({
+                              ...complaintData,
+                              evidence: e.target.files[0],
+                            })
+                          }
+                        />
+                        <button
+                          onClick={() =>
+                            handleSubmitComplaint(order._id, order.productId)
+                          }
+                          style={styles.button}
+                        >
+                          Submit Complaint
+                        </button>
+                      </div>
+                    )}
+
+                    {userComplaint && (
+                      <div>
+                        {editingComplaintId === userComplaint._id ? (
+                          <div>
+                            <textarea
+                              placeholder="Complaint Description"
+                              value={editedComplaint.description}
+                              onChange={(e) =>
+                                setEditedComplaint({
+                                  ...editedComplaint,
+                                  description: e.target.value,
+                                })
+                              }
+                              style={styles.textarea}
+                            />
+                            <select
+                              value={editedComplaint.category}
+                              onChange={(e) =>
+                                setEditedComplaint({
+                                  ...editedComplaint,
+                                  category: e.target.value,
+                                })
+                              }
+                              style={styles.select}
+                            >
+                              <option value="Damaged Product">Damaged Product</option>
+                              <option value="Late Delivery">Late Delivery</option>
+                              <option value="Wrong Product">Wrong Product</option>
+                              <option value="Poor Quality">Poor Quality</option>
+                              <option value="Missing Items">Missing Items</option>
+                              <option value="Others">Others</option>
+                            </select>
+                            <select
+                              value={editedComplaint.resolutionRequest}
+                              onChange={(e) =>
+                                setEditedComplaint({
+                                  ...editedComplaint,
+                                  resolutionRequest: e.target.value,
+                                })
+                              }
+                              style={styles.select}
+                            >
+                              <option value="Replacement">Replacement</option>
+                              <option value="Refund">Refund</option>
+                              <option value="Return">Return</option>
+                              <option value="Exchange">Exchange</option>
+                              <option value="Other">Other</option>
+                            </select>
+                            <input
+                              type="file"
+                              onChange={(e) =>
+                                setEditedComplaint({
+                                  ...editedComplaint,
+                                  evidence: e.target.files[0],
+                                })
+                              }
+                            />
+                            <button
+                              onClick={() =>
+                                handleSaveComplaint(userComplaint._id)
+                              }
+                              style={styles.button}
+                            >
+                              Save
+                            </button>
+                            <button
+                              onClick={() => setEditingComplaintId(null)}
+                              style={styles.button}
+                            >
+                              Cancel
+                            </button>
+                          </div>
+                        ) : (
+                          <div>
+                            <p>
+                              <strong>Your Complaint:</strong>{" "}
+                              {userComplaint.description}
+                            </p>
+                            <p>
+                              <strong>Category:</strong>{" "}
+                              {userComplaint.category}
+                            </p>
+                            
+                            <p>
+                              <strong>Resolution Request:</strong>{" "}
+                              {userComplaint.resolutionRequest}
+                            </p>
+                            <button
+                              onClick={() => handleEditComplaint(userComplaint)}
+                              style={styles.button}
+                            >
+                              Edit Complaint
+                            </button>
+                          </div>
+                        )}
+                      </div>
+                    )}
                   </div>
                 )}
               </div>
@@ -351,7 +664,7 @@ const styles = {
     textAlign: 'center',
     padding: '20px',
     marginTop: 'auto',
-    width: '100%', // Ensure footer spans full width
+    width: '100%',
   },
   linkStyle: {
     color: '#4caf50',
@@ -386,9 +699,9 @@ const styles = {
     textAlign: "center",
   },
   productImage: {
-    width: "150px", // Reduced size
-    height: "150px", // Reduced size
-    objectFit: "contain", // Ensure the full image is visible
+    width: "150px",
+    height: "150px",
+    objectFit: "contain",
     borderRadius: "10px",
     marginBottom: "10px",
   },
@@ -450,6 +763,17 @@ const styles = {
     borderRadius: "5px",
     cursor: "pointer",
     textDecoration: "none",
+    margin: "5px",
+  },
+  complaintButton: {
+    padding: "10px 20px",
+    backgroundColor: "#ff5722",
+    color: "white",
+    border: "none",
+    borderRadius: "5px",
+    cursor: "pointer",
+    textDecoration: "none",
+    margin: "5px",
   },
   textarea: {
     width: "100%",

@@ -2,6 +2,7 @@ import React, { useEffect, useState } from 'react';
 import axios from 'axios';
 import NavBar from "../../Components/Layout/NavBar";
 import { Link } from 'react-router-dom';
+import NavSeller from '../../Components/Layout/NavSeller';
 
 const ReceivedOrders = () => {
     const [receivedOrders, setReceivedOrders] = useState([]);
@@ -103,7 +104,7 @@ const ReceivedOrders = () => {
 
     return (
         <div style={styles.pageStyle}>
-            <NavBar/>
+            <NavSeller/>
             <h1 style={headerStyle}>Rcieved Orders</h1>
             {error && <p style={styles.error}>{error}</p>}
             {receivedOrders.length > 0 ? (

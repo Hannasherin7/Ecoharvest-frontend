@@ -3,9 +3,9 @@ import React, { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import NavAdmin from '../Components/Layout/NavAdmin';
 
-const Viewuser = () => {
-    const [users, setUsers] = useState([]); // All sellers fetched from the backend
-    const [filteredUsers, setFilteredUsers] = useState([]); // Sellers filtered based on search query
+const Viewbuyer = () => {
+    const [users, setUsers] = useState([]); // All buyers fetched from the backend
+    const [filteredUsers, setFilteredUsers] = useState([]); // Buyers filtered based on search query
     const [searchQuery, setSearchQuery] = useState(''); // Search input value
 
     const deleteUser = (_id) => {
@@ -30,10 +30,10 @@ const Viewuser = () => {
     const fetchUsers = async () => {
         try {
             const response = await axios.get("http://localhost:7000/viewsign");
-            // Filter users to show only sellers
-            const sellers = response.data.filter(user => user.usertype === "seller");
-            setUsers(sellers);
-            setFilteredUsers(sellers); // Initialize filtered users with all sellers
+            // Filter users to show only buyers
+            const buyers = response.data.filter(user => user.usertype === "buyer");
+            setUsers(buyers);
+            setFilteredUsers(buyers); // Initialize filtered users with all buyers
         } catch (error) {
             console.error("Error fetching users:", error);
             alert("Could not fetch users. Please try again later.");
@@ -45,7 +45,7 @@ const Viewuser = () => {
         const query = e.target.value.toLowerCase();
         setSearchQuery(query);
 
-        // Filter sellers based on the search query
+        // Filter buyers based on the search query
         const filtered = users.filter(user =>
             user.name.toLowerCase().includes(query) ||
             user.email.toLowerCase().includes(query) ||
@@ -63,13 +63,13 @@ const Viewuser = () => {
     return (
         <div style={styles.pageStyle}>
             <NavAdmin/>
-            <h1 style={styles.title}>View All Sellers</h1>
+            <h1 style={styles.title}>View All Buyers</h1>
 
             {/* Search Bar */}
             <div style={styles.searchContainer}>
                 <input
                     type="text"
-                    placeholder="Search sellers by name, email, phone, gender, or ID..."
+                    placeholder="Search buyers by name, email, phone, gender, or ID..."
                     value={searchQuery}
                     onChange={handleSearchChange}
                     style={styles.searchInput}
@@ -212,4 +212,4 @@ const styles = {
     },
 };
 
-export default Viewuser;
+export default Viewbuyer;

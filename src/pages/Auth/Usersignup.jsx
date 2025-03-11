@@ -141,6 +141,21 @@ const Usersignup = () => {
             </div>
 
             <div>
+              <label style={{ display: "block", marginBottom: "5px", color: "#333", fontWeight: "bold" }}>User Type</label>
+              <select
+                style={{ width: "100%", padding: "10px", borderRadius: "5px", border: "1px solid #ccc" }}
+                {...register("usertype", { required: "User type is required" })}
+              >
+                <option value="">Select User Type</option>
+                <option value="seller">Seller</option>
+                <option value="buyer">Buyer</option>
+              </select>
+              {errors?.usertype?.message && (
+                <span style={{ color: "red", fontSize: "14px" }}>{errors?.usertype?.message}</span>
+              )}
+            </div>
+
+            <div>
               <label style={{ display: "block", marginBottom: "5px", color: "#333", fontWeight: "bold" }}>Password</label>
               <input
                 type="password"

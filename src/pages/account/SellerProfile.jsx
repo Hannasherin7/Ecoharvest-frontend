@@ -3,8 +3,9 @@ import axios from "axios";
 import { useNavigate } from "react-router-dom";
 import NavBar from "../../Components/Layout/NavBar";
 import { Link } from 'react-router-dom';
+import NavSeller from "../../Components/Layout/NavSeller";
 
-const UserDetails = () => {
+const SellerProfile = () => {
   const navigate = useNavigate();
   const [user, setUser] = useState(null);
   const [loading, setLoading] = useState(true);
@@ -139,7 +140,7 @@ const UserDetails = () => {
   return (
     <div style={pageStyle}>
       <div style={{ width: "100%" }}>
-      <NavBar />
+      <NavSeller/>
     </div>
       <h1 style={headerStyle}>User Profile</h1> {/* Header with headerStyle applied */}
 
@@ -168,17 +169,13 @@ const UserDetails = () => {
 
         {/* Buttons for navigation */}
         <div style={buttonContainer}>
-          <Link to="/uorder" style={buttonStyle}>
-            Your Orders
+          <Link to={`/soldproducts/${user?._id}`} style={buttonStyle}>
+            Sold Products
           </Link>
-         
-        </div>
-        <div style={buttonContainer}>
-          <Link to="/ucom" style={buttonStyle}>
-            Your Complaints
+          <Link to="/rcor" style={buttonStyle}>
+            Received Orders
           </Link>
-         
-        </div>
+          </div>
       </div>
 
       {/* Footer */}
@@ -199,4 +196,4 @@ const UserDetails = () => {
   );
 };
 
-export default UserDetails;
+export default SellerProfile;

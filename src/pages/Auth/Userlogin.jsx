@@ -27,12 +27,17 @@ const Userlogin = () => {
         localStorage.setItem("useremail", response.data.email);
         localStorage.setItem("name", response.data.name);
         localStorage.setItem("isAdmin", response?.data?.isAdmin || false);
+        localStorage.setItem("usertype", response.data.usertype); // Store usertype in localStorage
 
         alert("LOGGED IN");
+
+        // Check user type and navigate accordingly
         if (response.data?.isAdmin === true) {
-          return navigate("/adminhome");
+          navigate("/adminhome");
+        } else if (response.data.usertype === "seller") {
+          navigate("/sellerhome"); // Navigate to seller home if user is a seller
         } else {
-          navigate("/userhome");
+          navigate("/userhome"); // Navigate to user home for other users
         }
       } else if (response.data.status === "Error") {
         setErrorMessage(response.data.message);

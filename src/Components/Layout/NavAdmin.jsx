@@ -30,7 +30,10 @@ const NavAdmin = () => {
                 <a className="nav-link text-white" href="/adminhome">Home</a>
               </li>
               <li className="nav-item me-3">
-                <a className="nav-link text-white" href="/users">Users</a>
+                <a className="nav-link text-white" href="/users">Sellers</a>
+              </li>
+              <li className="nav-item me-3">
+                <a className="nav-link text-white" href="/buyer">Buyers</a>
               </li>
               <li className="nav-item me-3">
                 <a className="nav-link text-white" href="/orders">Orders</a>
@@ -46,6 +49,15 @@ const NavAdmin = () => {
               </li>
               <li className="nav-item me-3">
                 <a className="nav-link text-white" href="/complaintList">Complaints</a>
+              </li>
+              <li className="nav-item me-3">
+                <a className="nav-link text-white" href="/acom">buyer complaints</a>
+              </li>
+              <li className="nav-item me-3">
+                <a className="nav-link text-white" href="/senda">send anoouncement</a>
+              </li>
+              <li className="nav-item me-3">
+                <a className="nav-link text-white" href="/viewaa">view announcement</a>
               </li>
               <li className="nav-item me-3">
                 <a className="nav-link text-white" href="/cfr">Confirm farmer</a>
