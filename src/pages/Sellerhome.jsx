@@ -13,6 +13,7 @@ const Sellerhome = () => {
   const [recentActivities, setRecentActivities] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
+  const [visibleActivities, setVisibleActivities] = useState(3); // Number of activities to show initially
 
   useEffect(() => {
     const fetchData = async () => {
@@ -43,7 +44,11 @@ const Sellerhome = () => {
             },
           }
         );
-        setRecentActivities(activitiesResponse.data);
+        // Sort activities by timestamp (newest first)
+        const sortedActivities = activitiesResponse.data.sort(
+          (a, b) => new Date(b.timestamp) - new Date(a.timestamp)
+        );
+        setRecentActivities(sortedActivities);
 
         setLoading(false);
       } catch (err) {
@@ -55,6 +60,11 @@ const Sellerhome = () => {
 
     fetchData();
   }, []);
+
+  // Function to load more activities
+  const loadMoreActivities = () => {
+    setVisibleActivities((prev) => prev + 3); // Increase the number of visible activities by 3
+  };
 
   if (loading) {
     return <p>Loading...</p>;
@@ -144,14 +154,22 @@ const Sellerhome = () => {
       {/* Recent Activities Section */}
       <div style={styles.recentActivitiesContainer}>
         <h2 style={styles.sectionHeading}>Recent Activities</h2>
-        <div style={styles.recentActivities}>
-          {recentActivities.map((activity, index) => (
+        <div style={styles.recentActivitiesGrid}>
+          {recentActivities.slice(0, visibleActivities).map((activity, index) => (
             <div key={index} style={styles.activityCard}>
               <p>{activity.message}</p>
-              <small>{activity.timestamp}</small>
+              <small>{new Date(activity.timestamp).toLocaleString()}</small>
             </div>
           ))}
         </div>
+        {visibleActivities < recentActivities.length && (
+          <button
+            onClick={loadMoreActivities}
+            style={styles.loadMoreButton}
+          >
+            Read More
+          </button>
+        )}
       </div>
 
       {/* Footer */}
@@ -299,8 +317,9 @@ const styles = {
     textAlign: "center",
     padding: "20px",
   },
-  recentActivities: {
+  recentActivitiesGrid: {
     display: "flex",
+    flexWrap: "wrap",
     justifyContent: "center",
     gap: "20px",
     marginTop: "20px",
@@ -310,8 +329,18 @@ const styles = {
     borderRadius: "10px",
     padding: "20px",
     boxShadow: "0 4px 8px rgba(0, 0, 0, 0.2)",
-    width: "300px",
-    textAlign: "center",
+    width: "calc(33.33% - 40px)", // 3 cards per row with gap
+    textAlign: "left",
+  },
+  loadMoreButton: {
+    backgroundColor: "#4caf50",
+    color: "white",
+    padding: "10px 20px",
+    border: "none",
+    borderRadius: "5px",
+    cursor: "pointer",
+    fontSize: "16px",
+    marginTop: "20px",
   },
   footer: {
     backgroundColor: "#333",

@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from "react";
 import axios from "axios";
+import NavAdmin from "../../Components/Layout/NavAdmin"; // Import NavAdmin for the header
 
 const ViewAnnouncementsbyadmin = () => {
   const [announcements, setAnnouncements] = useState([]);
@@ -53,28 +54,96 @@ const ViewAnnouncementsbyadmin = () => {
     }));
   };
 
+  // Styles
+  const pageStyle = {
+    padding: "20px",
+    backgroundColor: "#f5f5f5",
+    minHeight: "100vh",
+  };
+
+  const headerStyle = {
+    textAlign: "center",
+    margin: "20px 0",
+    fontSize: "32px",
+    color: "#333",
+  };
+
+  const announcementCardStyle = {
+    border: "1px solid #ddd",
+    padding: "20px",
+    marginBottom: "20px",
+    borderRadius: "8px",
+    backgroundColor: "#fff",
+    boxShadow: "0 4px 8px rgba(0, 0, 0, 0.1)",
+  };
+
+  const announcementTextStyle = {
+    fontSize: "18px",
+    marginBottom: "10px",
+  };
+
+  const announcementImageStyle = {
+    width: "100%",
+    maxWidth: "500px",
+    height: "auto",
+    borderRadius: "10px",
+    marginBottom: "10px",
+  };
+
+  const commentButtonStyle = {
+    backgroundColor: "#4CAF50",
+    color: "white",
+    border: "none",
+    padding: "10px 20px",
+    borderRadius: "5px",
+    cursor: "pointer",
+    marginBottom: "10px",
+  };
+
+  const commentSectionStyle = {
+    marginTop: "10px",
+  };
+
+  const commentCardStyle = {
+    marginBottom: "10px",
+    padding: "10px",
+    border: "1px solid #ddd",
+    borderRadius: "5px",
+    backgroundColor: "#f9f9f9",
+  };
+
+  const commentTextStyle = {
+    marginBottom: "5px",
+  };
+
+  const likeButtonStyle = {
+    backgroundColor: "#f44336",
+    color: "white",
+    border: "none",
+    padding: "5px 10px",
+    borderRadius: "5px",
+    cursor: "pointer",
+  };
+
   return (
-    <div style={{ padding: "20px", maxWidth: "800px", margin: "0 auto" }}>
-      <h1 style={{ textAlign: "center", marginBottom: "20px" }}>Announcements</h1>
+    <div style={pageStyle}>
+      {/* Header */}
+      <NavAdmin />
+
+      {/* Page Title */}
+      <h1 style={headerStyle}>Announcements</h1>
+
+      {/* Announcements List */}
       {announcements.map((announcement) => (
-        <div
-          key={announcement._id}
-          style={{
-            border: "1px solid #ccc",
-            padding: "20px",
-            marginBottom: "20px",
-            borderRadius: "10px",
-            backgroundColor: "#f9f9f9",
-          }}
-        >
+        <div key={announcement._id} style={announcementCardStyle}>
           {/* Announcement Content */}
-          <div style={{ marginBottom: "20px" }}>
-            <p style={{ fontSize: "18px", marginBottom: "10px" }}>{announcement.text}</p>
+          <div>
+            <p style={announcementTextStyle}>{announcement.text}</p>
             {announcement.image && (
               <img
                 src={`http://localhost:7000/${announcement.image}`}
                 alt="Announcement"
-                style={{ width: "100%", maxWidth: "500px", height: "auto", borderRadius: "10px" }}
+                style={announcementImageStyle}
               />
             )}
           </div>
@@ -82,47 +151,23 @@ const ViewAnnouncementsbyadmin = () => {
           {/* Comment Button */}
           <button
             onClick={() => toggleComments(announcement._id)}
-            style={{
-              backgroundColor: "#4CAF50",
-              color: "white",
-              border: "none",
-              padding: "10px 20px",
-              borderRadius: "5px",
-              cursor: "pointer",
-              marginBottom: "10px",
-            }}
+            style={commentButtonStyle}
           >
             {showComments[announcement._id] ? "Hide Comments" : "View Comments"}
           </button>
 
           {/* Comments Section */}
           {showComments[announcement._id] && (
-            <div>
+            <div style={commentSectionStyle}>
               <h3 style={{ marginBottom: "10px" }}>Comments</h3>
               {announcement.comments.map((comment) => (
-                <div
-                  key={comment._id}
-                  style={{
-                    marginBottom: "10px",
-                    padding: "10px",
-                    border: "1px solid #ddd",
-                    borderRadius: "5px",
-                    backgroundColor: "#fff",
-                  }}
-                >
-                  <p style={{ marginBottom: "5px" }}>
+                <div key={comment._id} style={commentCardStyle}>
+                  <p style={commentTextStyle}>
                     <strong>{comment.sellerId.name}:</strong> {comment.text}
                   </p>
                   <button
                     onClick={() => handleLikeComment(announcement._id, comment._id)}
-                    style={{
-                      backgroundColor: "#f44336",
-                      color: "white",
-                      border: "none",
-                      padding: "5px 10px",
-                      borderRadius: "5px",
-                      cursor: "pointer",
-                    }}
+                    style={likeButtonStyle}
                   >
                     Like ({comment.likes.length})
                   </button>

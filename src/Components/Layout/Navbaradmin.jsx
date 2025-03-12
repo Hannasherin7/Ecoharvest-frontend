@@ -1,7 +1,7 @@
 import React from 'react';
 import { useNavigate } from 'react-router-dom'; 
 
-const NavAdmin = () => {
+const Navbaradmin = () => {
   const navigate = useNavigate();
   const handleLogout = () => {
     localStorage.removeItem('token'); 
@@ -56,7 +56,6 @@ const NavAdmin = () => {
               <li className="nav-item me-3">
                 <a className="nav-link text-white" href="/senda">send anoouncement</a>
               </li>
-             
               <li className="nav-item me-3">
                 <a className="nav-link text-white" href="/cfr">Confirm farmer</a>
               </li>
@@ -77,4 +76,4 @@ const NavAdmin = () => {
   );
 };
 
-export default NavAdmin;
+export default Navbaradmin;

@@ -138,38 +138,7 @@ export const Rec = () => {
           </div>
         </div>
       </div>
-      {/* Footer */}
-      <footer style={styles.footer}>
-        <p>&copy; 2025 EcoHarvest. All rights reserved.</p>
-        <p>
-          Follow us on
-          <a href="https://facebook.com" style={styles.link}>
-            {" "}
-            Facebook
-          </a>
-          ,
-          <a href="https://instagram.com" style={styles.link}>
-            {" "}
-            Instagram
-          </a>
-          , and
-          <a href="https://twitter.com" style={styles.link}>
-            {" "}
-            Twitter
-          </a>
-          .
-        </p>
-        <p>
-          <Link to="/contact" style={styles.link}>
-            Contact Us
-          </Link>{" "}
-          |
-          <Link to="/about" style={styles.link}>
-            {" "}
-            About Us
-          </Link>
-        </p>
-      </footer>
+     
     </div>
   );
 };

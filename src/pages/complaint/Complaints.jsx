@@ -1,8 +1,8 @@
 import React, { useState } from 'react';
 import axios from 'axios';
 import NavBar from '../../Components/Layout/NavBar';
-import { useNavigate } from 'react-router-dom'; // Import useNavigate
 import NavSeller from '../../Components/Layout/NavSeller';
+import { useNavigate, Link } from 'react-router-dom'; // Import Link for footer navigation
 
 const Complaints = () => {
     const [data, setData] = useState({
@@ -79,11 +79,35 @@ const Complaints = () => {
         }
     };
 
+    // Styles
+    const styles = {
+        footer: {
+            backgroundColor: '#333',
+            color: '#fff',
+            textAlign: 'center',
+            padding: '20px',
+            marginTop: '30px',
+        },
+        link: {
+            color: '#4caf50',
+            textDecoration: 'none',
+        },
+    };
+
+    const headerStyle = {
+        backgroundColor: "rgba(0, 0, 0, 0.5)",
+        color: "white",
+        textAlign: "center",
+        padding: "20px",
+        borderRadius: "10px",
+        margin: "20px 0",
+    };
+
     return (
         <div>
-            <NavSeller/>
-            <div className="container mt-5">
-                <h1>Complaints Form</h1>
+            <NavSeller />
+            <div className="container mt-4">
+                <h1 style={headerStyle}>Complaints Form</h1>
                 {/* Add a button to navigate to /user/complaint */}
                 <div className="text-end mb-3">
                     <button 
@@ -135,6 +159,20 @@ const Complaints = () => {
                     </div>
                 </div>
             </div>
+            {/* Footer */}
+            <footer style={styles.footer}>
+                <p>&copy; 2025 EcoHarvest. All rights reserved.</p>
+                <p>
+                    Follow us on
+                    <a href="https://facebook.com" style={styles.link}> Facebook</a>,
+                    <a href="https://instagram.com" style={styles.link}> Instagram</a>, and
+                    <a href="https://twitter.com" style={styles.link}> Twitter</a>.
+                </p>
+                <p>
+                    <Link to="/contact" style={styles.link}>Contact Us</Link> |
+                    <Link to="/about" style={styles.link}> About Us</Link>
+                </p>
+            </footer>
         </div>
     );
 };

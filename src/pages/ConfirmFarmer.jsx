@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from "react";
 import axios from "axios";
+import Navbaradmin from "../Components/Layout/Navbaradmin";
 
 const ConfirmFarmer = () => {
   const [farmers, setFarmers] = useState([]);
@@ -36,10 +37,18 @@ const ConfirmFarmer = () => {
       .catch((error) => console.error("Error updating status:", error));
   };
 
-  // Inline styles
-  const containerStyle = {
+  // Styles
+  const pageStyle = {
     padding: "20px",
+    backgroundColor: "#f5f5f5",
+    minHeight: "100vh",
+  };
+
+  const headerStyle = {
     textAlign: "center",
+    margin: "20px 0",
+    fontSize: "32px",
+    color: "#333",
   };
 
   const gridStyle = {
@@ -51,8 +60,8 @@ const ConfirmFarmer = () => {
 
   const cardStyle = {
     backgroundColor: "#fff",
-    border: "1px solid #ccc",
-    borderRadius: "10px",
+    border: "1px solid #ddd",
+    borderRadius: "8px",
     boxShadow: "0 4px 8px rgba(0, 0, 0, 0.1)",
     padding: "20px",
     width: "300px",
@@ -61,15 +70,30 @@ const ConfirmFarmer = () => {
 
   const selectStyle = {
     width: "100%",
-    padding: "5px",
-    marginTop: "5px",
+    padding: "10px",
+    marginTop: "10px",
     borderRadius: "5px",
-    border: "1px solid #ccc",
+    border: "1px solid #ddd",
+    fontSize: "16px",
+  };
+
+  const linkStyle = {
+    color: "#007bff",
+    textDecoration: "none",
+    "&:hover": {
+      textDecoration: "underline",
+    },
   };
 
   return (
-    <div style={containerStyle}>
-      <h2>Farmer Verification and Approval</h2>
+    <div style={pageStyle}>
+      {/* Header */}
+      <Navbaradmin/>
+
+      {/* Page Title */}
+      <h1 style={headerStyle}>Farmer Verification and Approval</h1>
+
+      {/* Farmers Grid */}
       <div style={gridStyle}>
         {farmers.length > 0 ? (
           farmers.map((f) => (
@@ -86,10 +110,10 @@ const ConfirmFarmer = () => {
               <p>
                 <strong>ID Proof:</strong>
                 <a
-                  href={`http://localhost:7000`+f.idProof}
+                  href={`http://localhost:7000${f.idProof}`}
                   target="_blank"
                   rel="noopener noreferrer"
-                  style={{ color: "#007bff", textDecoration: "none" }}
+                  style={linkStyle}
                 >
                   View
                 </a>
@@ -101,6 +125,20 @@ const ConfirmFarmer = () => {
               <p>
                 <strong>Registered On:</strong>{" "}
                 {new Date(f.createdAt).toLocaleDateString()}
+              </p>
+              <p>
+                <strong>Product Type:</strong> {f.productype || "N/A"}
+              </p>
+              <p>
+                <strong>Seed Category:</strong> {f.seedcategory || "N/A"}
+              </p>
+              <p>
+                <strong>Fertilizer Category:</strong>{" "}
+                {f.fertilizercategory || "N/A"}
+              </p>
+              <p>
+                <strong>Category (Organic Product):</strong>{" "}
+                {f.category || "N/A"}
               </p>
               <p>
                 <strong>Status:</strong>

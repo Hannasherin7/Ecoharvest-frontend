@@ -142,28 +142,21 @@ const UserOrders = () => {
   };
 
   // Complaint handlers
-  const handleAddComplaint = async (orderId) => {
-    const userId = localStorage.getItem("userid");
-    const productId = userOrders.find((order) => order._id === orderId)?.productId;
-
-    try {
-      const response = await axios.get(
-        `http://localhost:7000/check-existing-complaint?userId=${userId}&productId=${productId}`,
-        {
-          headers: {
-            Authorization: `Bearer ${localStorage.getItem("token")}`,
-          },
-        }
+  const handleAddComplaint = (orderId) => {
+    const userComplaint = userOrders
+      .find((order) => order._id === orderId)
+      ?.complaints?.find(
+        (complaint) => complaint.userId === localStorage.getItem("userid")
       );
 
-      if (response.data.hasExistingComplaint) {
-        alert("You have already submitted a complaint for this product. If you want to know about your complaint, please go to your complaints.");
-      } else {
-        setComplaintVisible((prev) => ({ ...prev, [orderId]: true }));
-      }
-    } catch (err) {
-      console.error("Error checking existing complaint:", err);
+    if (userComplaint) {
+      alert(
+        "You have already submitted a complaint for this product. If you want to know about your complaint, please go to your complaints."
+      );
+      return;
     }
+
+    setComplaintVisible((prev) => ({ ...prev, [orderId]: true }));
   };
 
   const handleCloseComplaint = (orderId) => {
@@ -218,7 +211,7 @@ const UserOrders = () => {
       }
     } catch (err) {
       console.error("Error submitting complaint:", err);
-      alert("You have already submitted a complaint for this product.");
+      alert("You have already submitted a complaint for this product. If you want to know about your complaint, please go to your complaints.");
     }
   };
 

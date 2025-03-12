@@ -1,5 +1,7 @@
 import React, { useEffect, useState } from "react";
 import axios from "axios";
+import NavSeller from "../../Components/Layout/NavSeller"; // Import NavSeller
+import { Link } from "react-router-dom"; // For footer navigation
 
 const ViewAnnouncements = () => {
   const [announcements, setAnnouncements] = useState([]);
@@ -77,112 +79,131 @@ const ViewAnnouncements = () => {
     }));
   };
 
-  return (
-    <div style={{ padding: "20px", maxWidth: "800px", margin: "0 auto" }}>
-      <h1 style={{ textAlign: "center", marginBottom: "20px" }}>Announcements</h1>
-      {announcements.map((announcement) => (
-        <div
-          key={announcement._id}
-          style={{
-            border: "1px solid #ccc",
-            padding: "20px",
-            marginBottom: "20px",
-            borderRadius: "10px",
-            backgroundColor: "#f9f9f9",
-          }}
-        >
-          {/* Announcement Content */}
-          <div style={{ marginBottom: "20px" }}>
-            <p style={{ fontSize: "18px", marginBottom: "10px" }}>{announcement.text}</p>
-            {announcement.image && (
-              <img
-                src={`http://localhost:7000/${announcement.image}`}
-                alt="Announcement"
-                style={{ width: "100%", maxWidth: "500px", height: "auto", borderRadius: "10px" }}
-              />
-            )}
-          </div>
+  // Styles
+  const styles = {
+    footer: {
+      backgroundColor: '#333',
+      color: '#fff',
+      textAlign: 'center',
+      padding: '20px',
+      marginTop: '30px',
+    },
+    link: {
+      color: '#4caf50',
+      textDecoration: 'none',
+    },
+  };
 
-          {/* Comment Button */}
-          <button
-            onClick={() => toggleComments(announcement._id)}
+  const headerStyle = {
+    backgroundColor: "rgba(0, 0, 0, 0.5)",
+    color: "white",
+    textAlign: "center",
+    padding: "20px",
+    borderRadius: "10px",
+    margin: "20px 0",
+  };
+
+  return (
+    <div>
+      <NavSeller /> {/* Add NavSeller */}
+      <div className="container mt-4">
+        <h1 style={headerStyle}>Announcements</h1>
+        {announcements.map((announcement) => (
+          <div
+            key={announcement._id}
             style={{
-              backgroundColor: "#4CAF50",
-              color: "white",
-              border: "none",
-              padding: "10px 20px",
-              borderRadius: "5px",
-              cursor: "pointer",
-              marginBottom: "10px",
+              border: "1px solid #ccc",
+              padding: "20px",
+              marginBottom: "20px",
+              borderRadius: "10px",
+              backgroundColor: "#f9f9f9",
             }}
           >
-            {showComments[announcement._id] ? "Hide Comments" : "View Comments"}
-          </button>
+            {/* Announcement Content */}
+            <div style={{ marginBottom: "20px" }}>
+              <p style={{ fontSize: "18px", marginBottom: "10px" }}>{announcement.text}</p>
+              {announcement.image && (
+                <img
+                  src={`http://localhost:7000/${announcement.image}`}
+                  alt="Announcement"
+                  style={{ width: "100%", maxWidth: "500px", height: "auto", borderRadius: "10px" }}
+                />
+              )}
+            </div>
 
-          {/* Comments Section */}
-          {showComments[announcement._id] && (
-            <div>
-              <h3 style={{ marginBottom: "10px" }}>Comments</h3>
-              {announcement.comments.map((comment) => (
-                <div
-                  key={comment._id}
-                  style={{
-                    marginBottom: "10px",
-                    padding: "10px",
-                    border: "1px solid #ddd",
-                    borderRadius: "5px",
-                    backgroundColor: "#fff",
-                  }}
-                >
-                  <p style={{ marginBottom: "5px" }}>
-                    <strong>{comment.sellerId.name}:</strong> {comment.text}
-                  </p>
-                  <button
-                    onClick={() => handleLikeComment(announcement._id, comment._id)}
+            {/* Comment Button */}
+            <button
+              onClick={() => toggleComments(announcement._id)}
+              className="btn btn-primary mb-3"
+            >
+              {showComments[announcement._id] ? "Hide Comments" : "View Comments"}
+            </button>
+
+            {/* Comments Section */}
+            {showComments[announcement._id] && (
+              <div>
+                <h3 style={{ marginBottom: "10px" }}>Comments</h3>
+                {announcement.comments.map((comment) => (
+                  <div
+                    key={comment._id}
                     style={{
-                      backgroundColor: "#f44336",
-                      color: "white",
-                      border: "none",
-                      padding: "5px 10px",
+                      marginBottom: "10px",
+                      padding: "10px",
+                      border: "1px solid #ddd",
                       borderRadius: "5px",
-                      cursor: "pointer",
+                      backgroundColor: "#fff",
                     }}
                   >
-                    Like ({comment.likes.length})
-                  </button>
-                </div>
-              ))}
+                    <p style={{ marginBottom: "5px" }}>
+                      <strong>{comment.sellerId.name}:</strong> {comment.text}
+                    </p>
+                    <button
+                      onClick={() => handleLikeComment(announcement._id, comment._id)}
+                      style={{
+                        backgroundColor: "transparent",
+                        border: "none",
+                        cursor: "pointer",
+                        fontSize: "16px",
+                      }}
+                    >
+                      👍 {comment.likes.length}
+                    </button>
+                  </div>
+                ))}
 
-              {/* Add Comment Section */}
-              <textarea
-                placeholder="Add a comment"
-                value={commentText}
-                onChange={(e) => setCommentText(e.target.value)}
-                style={{
-                  width: "100%",
-                  padding: "10px",
-                  marginBottom: "10px",
-                  borderRadius: "5px",
-                  border: "1px solid #ccc",
-                }}
-              />
-              <button
-                onClick={() => handleAddComment(announcement._id)}
-                style={{
-                  backgroundColor: "#4CAF50",
-                  color: "white",
-                  border: "none",
-                  padding: "10px 20px",
-                  borderRadius: "5px",
-                  cursor: "pointer",
-                }}
-              >
-                Add Comment
-              </button>
-            </div>
-          )}
-        </div>
-      ))}
+                {/* Add Comment Section */}
+                <textarea
+                  placeholder="Add a comment"
+                  value={commentText}
+                  onChange={(e) => setCommentText(e.target.value)}
+                  className="form-control mb-3"
+                  style={{ width: "100%", padding: "10px", borderRadius: "5px" }}
+                />
+                <button
+                  onClick={() => handleAddComment(announcement._id)}
+                  className="btn btn-primary"
+                >
+                  Add Comment
+                </button>
+              </div>
+            )}
+          </div>
+        ))}
+      </div>
+      {/* Footer */}
+      <footer style={styles.footer}>
+        <p>&copy; 2025 EcoHarvest. All rights reserved.</p>
+        <p>
+          Follow us on
+          <a href="https://facebook.com" style={styles.link}> Facebook</a>,
+          <a href="https://instagram.com" style={styles.link}> Instagram</a>, and
+          <a href="https://twitter.com" style={styles.link}> Twitter</a>.
+        </p>
+        <p>
+          <Link to="/contact" style={styles.link}>Contact Us</Link> |
+          <Link to="/about" style={styles.link}> About Us</Link>
+        </p>
+      </footer>
     </div>
   );
 };

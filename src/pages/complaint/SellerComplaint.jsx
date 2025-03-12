@@ -1,5 +1,7 @@
 import React, { useEffect, useState } from "react";
 import axios from "axios";
+import NavSeller from "../../Components/Layout/NavSeller"; // Import NavSeller
+import { Link } from "react-router-dom"; // For footer navigation
 
 const SellerComplaints = () => {
   const [products, setProducts] = useState([]);
@@ -65,139 +67,151 @@ const SellerComplaints = () => {
     }
   };
 
-  return (
-    <div style={{ padding: "20px" }}>
-      <h1>Seller Complaints</h1>
-      {error && <p style={{ color: "red" }}>{error}</p>}
+  // Styles
+  const styles = {
+    footer: {
+      backgroundColor: '#333',
+      color: '#fff',
+      textAlign: 'center',
+      padding: '20px',
+      marginTop: '30px',
+    },
+    link: {
+      color: '#4caf50',
+      textDecoration: 'none',
+    },
+  };
 
-      {products.length > 0 ? (
-        products.map((product) => (
-          <div key={product._id} style={{ marginBottom: "20px", border: "1px solid #ccc", padding: "10px", borderRadius: "5px" }}>
-            <div style={{ display: "flex", alignItems: "center", marginBottom: "10px" }}>
-              <img
-                src={`http://localhost:7000/${product.image}`}
-                alt={product.name}
-                style={{ width: "100px", height: "100px", objectFit: "cover", borderRadius: "5px", marginRight: "10px" }}
-              />
-              <div>
-                <h2>{product.pname}</h2>
-                <p>{product.discription}</p>
-                <p>price:${product.price}</p>
+  const headerStyle = {
+    backgroundColor: "rgba(0, 0, 0, 0.5)",
+    color: "white",
+    textAlign: "center",
+    padding: "20px",
+    borderRadius: "10px",
+    margin: "20px 0",
+  };
+
+  return (
+    <div>
+      <NavSeller /> {/* Add NavSeller */}
+      <div className="container mt-4">
+        <h1 style={headerStyle}>Seller Complaints</h1>
+        {error && <p style={{ color: "red" }}>{error}</p>}
+
+        {products.length > 0 ? (
+          products.map((product) => (
+            <div key={product._id} style={{ marginBottom: "20px", border: "1px solid #ccc", padding: "10px", borderRadius: "5px" }}>
+              <div style={{ display: "flex", alignItems: "center", marginBottom: "10px" }}>
+                <img
+                  src={`http://localhost:7000/${product.image}`}
+                  alt={product.name}
+                  style={{ width: "100px", height: "100px", objectFit: "cover", borderRadius: "5px", marginRight: "10px" }}
+                />
+                <div>
+                  <h2>{product.pname}</h2>
+                  <p>{product.discription}</p>
+                  <p>Price: ${product.price}</p>
+                </div>
+              </div>
+
+              <h3>Complaints</h3>
+              <div className="table-responsive">
+                <table className="table table-striped">
+                  <thead>
+                    <tr>
+                      <th>User Email</th>
+                      <th>Description</th>
+                      <th>Category</th>
+                      <th>Resolution Request</th>
+                      <th>Status</th>
+                      <th>Seller Response</th>
+                      <th>Evidence</th>
+                      <th>Actions</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {product.complaints.map((complaint) => (
+                      <tr key={complaint._id}>
+                        <td>{complaint.userId?.email}</td>
+                        <td>{complaint.description}</td>
+                        <td>{complaint.category}</td>
+                        <td>{complaint.resolutionRequest}</td>
+                        <td>{complaint.status}</td>
+                        <td>{complaint.sellerResponse || "No response yet"}</td>
+                        <td>
+                          {complaint.evidence && (
+                            <img
+                              src={`http://localhost:7000/${complaint.evidence}`}
+                              alt="Evidence"
+                              style={{ width: "100px", height: "auto" }}
+                            />
+                          )}
+                        </td>
+                        <td>
+                          <button
+                            onClick={() => setSelectedComplaint(complaint._id)}
+                            className="btn btn-primary"
+                          >
+                            Update
+                          </button>
+                          {selectedComplaint === complaint._id && (
+                            <div style={{ marginTop: "10px" }}>
+                              <select
+                                value={status}
+                                onChange={(e) => setStatus(e.target.value)}
+                                className="form-select mb-2"
+                              >
+                                <option value="Pending">Pending</option>
+                                <option value="In Progress">In Progress</option>
+                                <option value="Resolved">Resolved</option>
+                                <option value="Rejected">Rejected</option>
+                              </select>
+                              <textarea
+                                placeholder="Enter your response"
+                                value={sellerMessage}
+                                onChange={(e) => setSellerMessage(e.target.value)}
+                                className="form-control mb-2"
+                              />
+                              <button
+                                onClick={() => handleUpdateComplaint(complaint._id)}
+                                className="btn btn-success me-2"
+                              >
+                                Submit
+                              </button>
+                              <button
+                                onClick={() => setSelectedComplaint(null)}
+                                className="btn btn-danger"
+                              >
+                                Cancel
+                              </button>
+                            </div>
+                          )}
+                        </td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
               </div>
             </div>
-
-            <h3>Complaints</h3>
-            <table style={{ width: "100%", borderCollapse: "collapse", border: "1px solid #ccc" }}>
-              <thead>
-                <tr style={{ backgroundColor: "#f2f2f2" }}>
-                  <th style={{ padding: "10px", border: "1px solid #ddd" }}>User Email</th>
-                  <th style={{ padding: "10px", border: "1px solid #ddd" }}>Description</th>
-                  <th style={{ padding: "10px", border: "1px solid #ddd" }}>Category</th>
-                  <th style={{ padding: "10px", border: "1px solid #ddd" }}>Resolution Request</th>
-                  <th style={{ padding: "10px", border: "1px solid #ddd" }}>Status</th>
-                  <th style={{ padding: "10px", border: "1px solid #ddd" }}>Seller Response</th>
-                  <th style={{ padding: "10px", border: "1px solid #ddd" }}>Evidence</th>
-                  <th style={{ padding: "10px", border: "1px solid #ddd" }}>Actions</th>
-                </tr>
-              </thead>
-              <tbody>
-                {product.complaints.map((complaint) => (
-                  <tr key={complaint._id} style={{ borderBottom: "1px solid #ddd" }}>
-                    <td style={{ padding: "10px", border: "1px solid #ddd" }}>
-                      {complaint.userId?.email}
-                    </td>
-                    <td style={{ padding: "10px", border: "1px solid #ddd" }}>
-                      {complaint.description}
-                    </td>
-                    <td style={{ padding: "10px", border: "1px solid #ddd" }}>
-                      {complaint.category}
-                    </td>
-                    <td style={{ padding: "10px", border: "1px solid #ddd" }}>
-                      {complaint.resolutionRequest}
-                    </td>
-                    <td style={{ padding: "10px", border: "1px solid #ddd" }}>
-                      {complaint.status}
-                    </td>
-                    <td style={{ padding: "10px", border: "1px solid #ddd" }}>
-                      {complaint.sellerResponse || "No response yet"}
-                    </td>
-                    <td style={{ padding: "10px", border: "1px solid #ddd" }}>
-                      {complaint.evidence && (
-                        <img
-                          src={`http://localhost:7000/${complaint.evidence}`}
-                          alt="Evidence"
-                          style={{ width: "100px", height: "auto" }}
-                        />
-                      )}
-                    </td>
-                    <td style={{ padding: "10px", border: "1px solid #ddd" }}>
-                      <button
-                        onClick={() => setSelectedComplaint(complaint._id)}
-                        style={{
-                          backgroundColor: "#4CAF50",
-                          color: "white",
-                          border: "none",
-                          padding: "5px 10px",
-                          cursor: "pointer",
-                        }}
-                      >
-                        Update
-                      </button>
-                      {selectedComplaint === complaint._id && (
-                        <div style={{ marginTop: "10px" }}>
-                          <select
-                            value={status}
-                            onChange={(e) => setStatus(e.target.value)}
-                            style={{ width: "100%", padding: "5px", marginBottom: "10px" }}
-                          >
-                            <option value="Pending">Pending</option>
-                            <option value="In Progress">In Progress</option>
-                            <option value="Resolved">Resolved</option>
-                            <option value="Rejected">Rejected</option>
-                          </select>
-                          <textarea
-                            placeholder="Enter your response"
-                            value={sellerMessage}
-                            onChange={(e) => setSellerMessage(e.target.value)}
-                            style={{ width: "100%", padding: "5px", marginBottom: "10px" }}
-                          />
-                          <button
-                            onClick={() => handleUpdateComplaint(complaint._id)}
-                            style={{
-                              backgroundColor: "#4CAF50",
-                              color: "white",
-                              border: "none",
-                              padding: "5px 10px",
-                              cursor: "pointer",
-                              marginRight: "5px",
-                            }}
-                          >
-                            Submit
-                          </button>
-                          <button
-                            onClick={() => setSelectedComplaint(null)}
-                            style={{
-                              backgroundColor: "#f44336",
-                              color: "white",
-                              border: "none",
-                              padding: "5px 10px",
-                              cursor: "pointer",
-                            }}
-                          >
-                            Cancel
-                          </button>
-                        </div>
-                      )}
-                    </td>
-                  </tr>
-                ))}
-              </tbody>
-            </table>
-          </div>
-        ))
-      ) : (
-        <p>No products with complaints found.</p>
-      )}
+          ))
+        ) : (
+          <p>No products with complaints found.</p>
+        )}
+      </div>
+      {/* Footer */}
+      <footer style={styles.footer}>
+        <p>&copy; 2025 EcoHarvest. All rights reserved.</p>
+        <p>
+          Follow us on
+          <a href="https://facebook.com" style={styles.link}> Facebook</a>,
+          <a href="https://instagram.com" style={styles.link}> Instagram</a>, and
+          <a href="https://twitter.com" style={styles.link}> Twitter</a>.
+        </p>
+        <p>
+          <Link to="/contact" style={styles.link}>Contact Us</Link> |
+          <Link to="/about" style={styles.link}> About Us</Link>
+        </p>
+      </footer>
     </div>
   );
 };
