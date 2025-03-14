@@ -125,6 +125,13 @@ const SoldProducts = () => {
     setEditedProduct({ ...editedProduct, [name]: value });
   };
 
+  // Function to handle changes in delivery zones
+  const handleDeliveryZonesChange = (e) => {
+    const { value } = e.target;
+    const zones = value.split(",").map((zone) => zone.trim());
+    setEditedProduct({ ...editedProduct, deliveryZones: zones });
+  };
+
   // Function to handle search input changes
   const handleSearchChange = (e) => {
     const query = e.target.value;
@@ -192,6 +199,7 @@ const SoldProducts = () => {
               <th style={styles.th}>Quantity Sold</th>
               <th style={styles.th}>Image</th>
               <th style={styles.th}>Feedbacks</th>
+              <th style={styles.th}>Delivery Zones</th>
               <th style={styles.th}>Action</th>
             </tr>
           </thead>
@@ -316,6 +324,19 @@ const SoldProducts = () => {
                     </ul>
                   ) : (
                     "No feedbacks yet" // Display this message if there are no feedbacks
+                  )}
+                </td>
+                <td style={styles.td}>
+                  {editingProductId === product._id ? (
+                    <input
+                      type="text"
+                      name="deliveryZones"
+                      value={editedProduct.deliveryZones?.join(", ") || ""}
+                      onChange={handleDeliveryZonesChange}
+                      placeholder="Enter postal codes separated by commas"
+                    />
+                  ) : (
+                    product.deliveryZones?.join(", ") || "No delivery zones"
                   )}
                 </td>
                 <td style={styles.td}>

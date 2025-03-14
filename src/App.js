@@ -61,6 +61,9 @@ import AdminComplaints from './pages/complaint/AdminComplaints';
 import SendAnnouncement from './pages/Annoucement/SendAnnouncement';
 import ViewAnnouncements from './pages/Annoucement/ViewAnnoucement';
 import ViewAnnouncementsbyadmin from './pages/Annoucement/ViewAnnoucementbyadmin';
+import AboutUsF from './pages/AboutUsF';
+import ContactUs from './pages/ContactUs';
+import ViewContactUs from './pages/ViewContactUs';
 
 
 
@@ -73,6 +76,9 @@ function App() {
     <Route path='/'element={(<Home/>)}/>
     <Route path='/login'element={(<Userlogin/>)}/>
     <Route path='/signup'element={(<Usersignup/>)}/>
+    <Route path="/about" element={<AboutUsF/>} />
+    <Route path="/contact" element={<ContactUs/>} />
+    <Route path="/vcontact" element={<ViewContactUs/>} />
     
 
     <Route element={<UserRoute />}>

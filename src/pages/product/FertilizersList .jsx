@@ -64,7 +64,25 @@ export const FertilizersList = () => {
     }
   }, [orderData.orderQuantity, selectedProduct]);
 
-  const placeOrder = () => {
+  const checkProductAvailability = async (productId, postalCode) => {
+    try {
+      const response = await axios.post("http://localhost:7000/check-availability", {
+        productId,
+        postalCode
+      }, {
+        headers: {
+          Authorization: `Bearer ${localStorage.getItem("token")}`
+        }
+      });
+
+      return response.data; // Return the response from the backend
+    } catch (error) {
+      console.error("Error checking product availability:", error);
+      return { status: "error", message: "An error occurred while checking product availability." };
+    }
+  };
+
+  const placeOrder = async () => {
     if (
       orderData.name &&
       orderData.email &&
@@ -73,6 +91,14 @@ export const FertilizersList = () => {
       orderData.pincode &&
       orderData.paymentMethod
     ) {
+      // Check product availability before placing the order
+      const availabilityResponse = await checkProductAvailability(selectedProduct._id, orderData.pincode);
+
+      if (availabilityResponse.status === "error") {
+        alert(availabilityResponse.message);
+        return;
+      }
+
       const orderPayload = {
         ...orderData,
         productId: selectedProduct._id,

@@ -17,9 +17,11 @@ export const AddProduct = () => {
         specialOffers: "", // New field for special offers
         discountPercentage: 0, // New field for discount percentage
         seedcategory: "", // New field for seed category
-        fertilizercategory: "" // New field for fertilizer category
+        fertilizercategory: "", // New field for fertilizer category
+        deliveryZones: [] // Array of supported postal codes
     });
 
+    const [postalCode, setPostalCode] = useState("");
     const [message, setMessage] = useState("");
 
     const inputHandler = (event) => {
@@ -30,8 +32,18 @@ export const AddProduct = () => {
         }
     };
 
+    const addPostalCode = () => {
+        if (postalCode) {
+            setData({
+                ...data,
+                deliveryZones: [...data.deliveryZones, postalCode]
+            });
+            setPostalCode("");
+        }
+    };
+
     const readValue = async () => {
-        const { image, pname, discription, price, quantity, category, details, productype, specialOffers, discountPercentage, seedcategory, fertilizercategory } = data;
+        const { image, pname, discription, price, quantity, category, details, productype, specialOffers, discountPercentage, seedcategory, fertilizercategory, deliveryZones } = data;
         if (!image || !pname || !discription || !price || !quantity || !details || !productype) {
             setMessage("Please fill in all required fields.");
             return;
@@ -50,6 +62,7 @@ export const AddProduct = () => {
         formData.append("discountPercentage", discountPercentage);
         formData.append("seedcategory", seedcategory);
         formData.append("fertilizercategory", fertilizercategory);
+        formData.append("deliveryZones", JSON.stringify(deliveryZones)); // Append delivery zones
 
         try {
             const response = await axios.post("http://localhost:7000/addpro", formData, {
@@ -74,7 +87,8 @@ export const AddProduct = () => {
                     specialOffers: "",
                     discountPercentage: 0,
                     seedcategory: "",
-                    fertilizercategory: ""
+                    fertilizercategory: "",
+                    deliveryZones: []
                 });
             } else {
                 setMessage("Error adding product");
@@ -121,7 +135,7 @@ export const AddProduct = () => {
 
     return (
         <div style={{ padding: '20px', minHeight: '100vh', display: 'flex', flexDirection: 'column', justifyContent: 'space-between' }}>
-            <NavSeller/>
+            <NavSeller />
             <h1 style={{ backgroundColor: "rgba(0, 0, 0, 0.5)", color: "white", textAlign: "center", padding: "20px", borderRadius: "10px", margin: "20px" }}>Sell Your Product</h1>
 
             {/* Feedback Message */}
@@ -228,13 +242,13 @@ export const AddProduct = () => {
 
                             {/* Other Fields */}
                             {Object.keys(data).map((key) => {
-                                if (key === "image" || key === "category" || key === "productype" || key === "seedcategory" || key === "fertilizercategory") return null;
+                                if (key === "image" || key === "category" || key === "productype" || key === "seedcategory" || key === "fertilizercategory" || key === "deliveryZones") return null;
 
                                 return (
                                     <div className="col-sm-6" key={key}>
                                         <label className="form-label">
-                                            {key === 'pname' ? 'Product Name' : 
-                                             key === 'discription' ? 'Description' : 
+                                            {key === 'pname' ? 'Product Name' :
+                                             key === 'discription' ? 'Description' :
                                              key.charAt(0).toUpperCase() + key.slice(1)}
                                         </label>
                                         {key === 'details' ? (
@@ -248,18 +262,45 @@ export const AddProduct = () => {
                                                 rows="4"
                                             />
                                         ) : (
-                                            <input 
-                                                type={key === 'price' || key === 'quantity' || key === 'discountPercentage' ? 'number' : 'text'} 
-                                                className="form-control" 
-                                                name={key} 
-                                                value={data[key]} 
-                                                onChange={inputHandler} 
-                                                style={{ marginBottom: '15px', padding: '10px', borderRadius: '5px', border: '1px solid #ccc' }} 
+                                            <input
+                                                type={key === 'price' || key === 'quantity' || key === 'discountPercentage' ? 'number' : 'text'}
+                                                className="form-control"
+                                                name={key}
+                                                value={data[key]}
+                                                onChange={inputHandler}
+                                                style={{ marginBottom: '15px', padding: '10px', borderRadius: '5px', border: '1px solid #ccc' }}
                                             />
                                         )}
                                     </div>
                                 );
                             })}
+
+                            {/* Postal Code Input */}
+                            <div className="col-sm-6">
+                                <label className="form-label">Postal Code</label>
+                                <input
+                                    type="text"
+                                    className="form-control"
+                                    value={postalCode}
+                                    onChange={(e) => setPostalCode(e.target.value)}
+                                    style={{ marginBottom: '15px', padding: '10px', borderRadius: '5px', border: '1px solid #ccc' }}
+                                />
+                            </div>
+                            <div className="col-12">
+                                <button onClick={addPostalCode} className="btn btn-primary">Add Postal Code</button>
+                            </div>
+
+                            {/* Display Added Postal Codes */}
+                            {data.deliveryZones.length > 0 && (
+                                <div className="col-12">
+                                    <h4>Added Postal Codes:</h4>
+                                    <ul>
+                                        {data.deliveryZones.map((code, index) => (
+                                            <li key={index}>{code}</li>
+                                        ))}
+                                    </ul>
+                                </div>
+                            )}
 
                             {/* Add Product Button */}
                             <div className="col-12">

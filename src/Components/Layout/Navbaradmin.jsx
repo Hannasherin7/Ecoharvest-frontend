@@ -57,6 +57,9 @@ const Navbaradmin = () => {
                 <a className="nav-link text-white" href="/senda">send anoouncement</a>
               </li>
               <li className="nav-item me-3">
+                <a className="nav-link text-white" href="/vcontact">contacts</a>
+              </li>
+              <li className="nav-item me-3">
                 <a className="nav-link text-white" href="/cfr">Confirm farmer</a>
               </li>
             </ul>

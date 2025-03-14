@@ -39,6 +39,9 @@ const Sellerhome = () => {
         const activitiesResponse = await axios.get(
           `http://localhost:7000/seller/activities?userId=${userId}`,
           {
+
+
+
             headers: {
               Authorization: `Bearer ${localStorage.getItem("token")}`,
             },
