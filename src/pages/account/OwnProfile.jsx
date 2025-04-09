@@ -1,6 +1,9 @@
 import React, { useState, useEffect } from 'react';
 import { Container, Typography, Box, Card, CardContent, CardMedia, Button, TextField } from '@mui/material';
 import { useLocation } from 'react-router-dom';
+import {  FaFacebook, FaInstagram, FaTwitter } from "react-icons/fa";
+
+         
 
 const OwnProfile = () => {
   const location = useLocation();

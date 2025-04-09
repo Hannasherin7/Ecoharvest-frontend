@@ -1,20 +1,37 @@
 import React from 'react';
-import { useNavigate } from 'react-router-dom'; 
+import { useNavigate } from 'react-router-dom';
+import { FaUser, FaShoppingCart, FaSignOutAlt, FaLeaf, FaHome, FaSeedling, FaShoppingBag, FaBook, FaQuestionCircle, FaUtensils, FaLightbulb } from 'react-icons/fa';
 
 const NavBar = () => {
   const navigate = useNavigate();
+  
   const handleLogout = () => {
-    localStorage.removeItem('token'); 
-    localStorage.removeItem('user'); 
-    navigate('/'); 
+    // Clear all auth-related data
+    localStorage.removeItem('token');
+    localStorage.removeItem('user');
+    localStorage.removeItem('tokenExpiration');
+    
+    // Optionally: Clear any other session data
+    localStorage.removeItem('cart');
+    
+    // Redirect to login page
+    navigate('/');
+    
+    // Force reload to clear any cached state
+    window.location.reload();
   };
 
   return (
     <div>
-      <nav className="navbar navbar-expand-lg bg-dark">
-        <div className="container-fluid">
+      <nav className="navbar navbar-expand-lg navbar-dark bg-success bg-gradient shadow-sm">
+        <div className="container">
+          <a className="navbar-brand d-flex align-items-center" href="/userhome">
+            <FaLeaf className="me-2" style={{ fontSize: '1.5rem' }} />
+            <span className="fw-bold">Organic Haven</span>
+          </a>
+          
           <button
-            className="navbar-toggler text-white border-white"
+            className="navbar-toggler"
             type="button"
             data-bs-toggle="collapse"
             data-bs-target="#navbarNav"
@@ -24,59 +41,84 @@ const NavBar = () => {
           >
             <span className="navbar-toggler-icon"></span>
           </button>
+          
           <div className="collapse navbar-collapse" id="navbarNav">
-          <li className="nav-item">
-                <a className="nav-link text-white" href="/userhome">Home</a>
-              </li>
-            <ul className="navbar-nav">
-              <li className="nav-item dropdown">
-                <a className="nav-link dropdown-toggle text-white" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">
-                  About Us
+            <ul className="navbar-nav me-auto">
+            
+              
+              <li className="nav-item">
+                <a className="nav-link d-flex align-items-center" href="/why">
+                  <FaQuestionCircle className="me-1" />
+                  <span className="d-none d-lg-inline">Why Organic</span>
                 </a>
-                <ul className="dropdown-menu bg-white">
-                  <li><a className="dropdown-item text-dark" href="/abt">Our Farm</a></li>
-                  <li><a className="dropdown-item text-dark" href="/why">Why Organic & Sustainable</a></li>
+              </li>
+              
+              <li className="nav-item dropdown">
+                <a className="nav-link dropdown-toggle d-flex align-items-center" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                  <FaUtensils className="me-1" />
+                  <span className="d-none d-lg-inline">Eat And Be Well</span>
+                </a>
+                <ul className="dropdown-menu dropdown-menu-dark">
+                  <li><a className="dropdown-item d-flex align-items-center" href="/viewrec"><FaUtensils className="me-2" />Recipes</a></li>
+                  <li><a className="dropdown-item d-flex align-items-center" href="/viewtips"><FaLightbulb className="me-2" />Storage Tips</a></li>
                 </ul>
               </li>
-              <li className="nav-item dropdown">
-                <a className="nav-link dropdown-toggle text-white" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">
-                  Eat And Be Well
+              
+              <li className="nav-item">
+                <a className="nav-link d-flex align-items-center" href="/seeds">
+                  <FaSeedling className="me-1" />
+                  <span className="d-none d-lg-inline">Seeds</span>
                 </a>
-                <ul className="dropdown-menu bg-white">
-                  <li><a className="dropdown-item text-dark" href="/viewrec">Recipes</a></li>
-                  <li><a className="dropdown-item text-dark" href="/viewtips">Storage Tips</a></li>
-                </ul>
               </li>
+              
               <li className="nav-item">
-                <a className="nav-link text-white" href="/seeds">Seeds</a>
-              </li>
-              <li className="nav-item">
-                <a className="nav-link text-white" href="/buy">Organic Products</a>
-              </li>
-              <li className="nav-item">
-                <a className="nav-link text-white" href="/fertilizers">Fertilizers</a>
-              </li>
-              <li className="nav-item dropdown">
-                <a className="nav-link dropdown-toggle text-white" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">
-                 Blogs
+                <a className="nav-link d-flex align-items-center" href="/buy">
+                  <FaShoppingBag className="me-1" />
+                  <span className="d-none d-lg-inline">Organic Products</span>
                 </a>
-                <ul className="dropdown-menu bg-white">
-                  <li><a className="dropdown-item text-dark" href="/addblog">Upload Your Blogs</a></li>
-                  <li><a className="dropdown-item text-dark" href="/myblog">View Your Blogs</a></li>
-                </ul>
               </li>
+              
               <li className="nav-item">
-                <a className="nav-link text-white" href="/own/:id">Profile</a>
+                <a className="nav-link" href="/fertilizers">Fertilizers</a>
+              </li>
+              
+              <li className="nav-item dropdown">
+                <a className="nav-link dropdown-toggle d-flex align-items-center" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                  <FaBook className="me-1" />
+                  <span className="d-none d-lg-inline">Blogs</span>
+                </a>
+                <ul className="dropdown-menu dropdown-menu-dark">
+                  <li><a className="dropdown-item d-flex align-items-center" href="/addblog"><FaBook className="me-2" />Upload Blog</a></li>
+                  <li><a className="dropdown-item d-flex align-items-center" href="/myblog"><FaBook className="me-2" />Your Blogs</a></li>
+                </ul>
               </li>
             </ul>
+            
             <ul className="navbar-nav ms-auto">
-              {localStorage.getItem("token") ? (
+              <li className="nav-item">
+                <a className="nav-link position-relative" href="/cart">
+                  <FaShoppingCart style={{ fontSize: '1.2rem' }} />
+                </a>
+              </li>
+              
+              <li className="nav-item">
+                <a className="nav-link" href="/profile">
+                  <FaUser style={{ fontSize: '1.2rem' }} />
+                </a>
+              </li>
+              
+              {localStorage.getItem("token") && (
                 <li className="nav-item">
-                  <button className="btn btn-danger text-white nav-link" onClick={handleLogout}>
-                    Logout
+                  <button 
+                    className="btn btn-link nav-link d-flex align-items-center" 
+                    onClick={handleLogout}
+                    style={{ color: 'rgba(255,255,255,.75)' }}
+                  >
+                    <FaSignOutAlt className="me-1" />
+                    <span className="d-none d-lg-inline">Logout</span>
                   </button>
                 </li>
-              ) : null}
+              )}
             </ul>
           </div>
         </div>
@@ -84,4 +126,5 @@ const NavBar = () => {
     </div>
   );
 };
+
 export default NavBar;

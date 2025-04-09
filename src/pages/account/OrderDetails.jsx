@@ -2,6 +2,8 @@ import React, { useEffect, useState } from 'react';
 import axios from 'axios';
 import Navbaradmin from '../../Components/Layout/Navbaradmin';
 
+           
+
 const OrderDetails = () => {
     const [orders, setOrders] = useState([]);
     const [error, setError] = useState('');
@@ -54,7 +56,7 @@ const OrderDetails = () => {
                                 <td style={styles.tableCell}>{order.userEmail}</td>
                                 <td style={styles.tableCell}>{order.userPhone}</td>
                                 <td style={styles.tableCell}>{order.quantity}</td>
-                                <td style={styles.tableCell}>${order.price}</td>
+                                <td style={styles.tableCell}>${order.discountedPrice}</td>
                             </tr>
                         ))}
                     </tbody>

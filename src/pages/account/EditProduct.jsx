@@ -2,6 +2,7 @@ import React, { useEffect, useState } from 'react';
 import axios from 'axios';
 import { useParams, useNavigate } from 'react-router-dom';
 
+
 const EditProduct = () => {
     const { id } = useParams(); // Get the product ID from the URL
     const navigate = useNavigate();

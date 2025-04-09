@@ -164,38 +164,7 @@ export const Viewproduct = () => {
           </div>
         </div>
       </div>
-      {/* Footer */}
-      <footer style={footerStyle}>
-        <p>&copy; 2025 EcoHarvest. All rights reserved.</p>
-        <p>
-          Follow us on
-          <a href="https://facebook.com" style={linkStyle}>
-            {" "}
-            Facebook
-          </a>
-          ,
-          <a href="https://instagram.com" style={linkStyle}>
-            {" "}
-            Instagram
-          </a>
-          , and
-          <a href="https://twitter.com" style={linkStyle}>
-            {" "}
-            Twitter
-          </a>
-          .
-        </p>
-        <p>
-          <Link to="/contact" style={linkStyle}>
-            Contact Us
-          </Link>{" "}
-          |
-          <Link to="/about" style={linkStyle}>
-            {" "}
-            About Us
-          </Link>
-        </p>
-      </footer>
+     
     </div>
   );
 };

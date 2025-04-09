@@ -1,12 +1,33 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom'; 
 
 const Navbaradmin = () => {
   const navigate = useNavigate();
+  const [isAuthenticated, setIsAuthenticated] = useState(false);
+
+  // Check authentication status on component mount and when token changes
+  useEffect(() => {
+    const token = localStorage.getItem('token');
+    setIsAuthenticated(!!token);
+  }, []);
+
   const handleLogout = () => {
-    localStorage.removeItem('token'); 
-    localStorage.removeItem('user'); 
-    navigate('/'); 
+    // Clear all authentication data
+    localStorage.removeItem('token');
+    localStorage.removeItem('user');
+    localStorage.removeItem('role'); // Clear role if you have role-based access
+    setIsAuthenticated(false);
+    navigate('/');
+  };
+
+  const handleNavigation = (e, path) => {
+    e.preventDefault();
+    if (!isAuthenticated) {
+      alert('Please login to access admin features');
+      navigate('/login');
+      return;
+    }
+    navigate(path);
   };
 
   return (
@@ -27,46 +48,49 @@ const Navbaradmin = () => {
           <div className="collapse navbar-collapse" id="navbarNav">
             <ul className="navbar-nav">
               <li className="nav-item me-3">
-                <a className="nav-link text-white" href="/adminhome">Home</a>
+                <a className="nav-link text-white" href="/adminhome" onClick={(e) => handleNavigation(e, '/adminhome')}>Home</a>
               </li>
               <li className="nav-item me-3">
-                <a className="nav-link text-white" href="/users">Sellers</a>
+                <a className="nav-link text-white" href="/users" onClick={(e) => handleNavigation(e, '/users')}>Sellers</a>
               </li>
               <li className="nav-item me-3">
-                <a className="nav-link text-white" href="/buyer">Buyers</a>
+                <a className="nav-link text-white" href="/buyer" onClick={(e) => handleNavigation(e, '/buyer')}>Buyers</a>
               </li>
               <li className="nav-item me-3">
-                <a className="nav-link text-white" href="/orders">Orders</a>
+                <a className="nav-link text-white" href="/orders" onClick={(e) => handleNavigation(e, '/orders')}>Orders</a>
               </li>
               <li className="nav-item me-3">
-                <a className="nav-link text-white" href="/products">Products</a>
+                <a className="nav-link text-white" href="/products" onClick={(e) => handleNavigation(e, '/products')}>Products</a>
               </li>
               <li className="nav-item me-3">
-                <a className="nav-link text-white" href="/tips">Tips</a>
+                <a className="nav-link text-white" href="/tips" onClick={(e) => handleNavigation(e, '/tips')}>Tips</a>
               </li>
               <li className="nav-item me-3">
-                <a className="nav-link text-white" href="/recipes">Recipes</a>
+                <a className="nav-link text-white" href="/recipes" onClick={(e) => handleNavigation(e, '/recipes')}>Recipes</a>
               </li>
               <li className="nav-item me-3">
-                <a className="nav-link text-white" href="/complaintList">Complaints</a>
+                <a className="nav-link text-white" href="/complaintList" onClick={(e) => handleNavigation(e, '/complaintList')}>Complaints</a>
               </li>
               <li className="nav-item me-3">
-                <a className="nav-link text-white" href="/acom">buyer complaints</a>
+                <a className="nav-link text-white" href="/acom" onClick={(e) => handleNavigation(e, '/acom')}>Buyer Complaints</a>
               </li>
               <li className="nav-item me-3">
-                <a className="nav-link text-white" href="/senda">send anoouncement</a>
+                <a className="nav-link text-white" href="/senda" onClick={(e) => handleNavigation(e, '/senda')}>Send Announcement</a>
               </li>
               <li className="nav-item me-3">
-                <a className="nav-link text-white" href="/vcontact">contacts</a>
+                <a className="nav-link text-white" href="/vcontact" onClick={(e) => handleNavigation(e, '/vcontact')}>Contacts</a>
               </li>
               <li className="nav-item me-3">
-                <a className="nav-link text-white" href="/cfr">Confirm farmer</a>
+                <a className="nav-link text-white" href="/cfr" onClick={(e) => handleNavigation(e, '/cfr')}>Confirm Seller</a>
               </li>
             </ul>
             <ul className="navbar-nav ms-auto">
-              {localStorage.getItem("token") ? (
+              {isAuthenticated ? (
                 <li className="nav-item">
-                  <button className="btn btn-danger text-white nav-link" onClick={handleLogout}>
+                  <button 
+                    className="btn btn-danger text-white nav-link" 
+                    onClick={handleLogout}
+                  >
                     Logout
                   </button>
                 </li>

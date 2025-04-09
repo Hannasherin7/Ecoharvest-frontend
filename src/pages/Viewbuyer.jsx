@@ -110,34 +110,7 @@ const Viewbuyer = () => {
                 </table>
             </div>
 
-            {/* Footer */}
-            <footer style={styles.footer}>
-                <p>&copy; 2025 EcoHarvest. All rights reserved.</p>
-                <p>
-                    Follow us on{' '}
-                    <a href="https://facebook.com" style={styles.footerLink}>
-                        Facebook
-                    </a>
-                    ,{' '}
-                    <a href="https://instagram.com" style={styles.footerLink}>
-                        Instagram
-                    </a>
-                    , and{' '}
-                    <a href="https://twitter.com" style={styles.footerLink}>
-                        Twitter
-                    </a>
-                    .
-                </p>
-                <p>
-                    <a href="/contact" style={styles.footerLink}>
-                        Contact Us
-                    </a>{' '}
-                    |{' '}
-                    <a href="/about" style={styles.footerLink}>
-                        About Us
-                    </a>
-                </p>
-            </footer>
+         
         </div>
     );
 };

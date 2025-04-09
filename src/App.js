@@ -64,6 +64,8 @@ import ViewAnnouncementsbyadmin from './pages/Annoucement/ViewAnnoucementbyadmin
 import AboutUsF from './pages/AboutUsF';
 import ContactUs from './pages/ContactUs';
 import ViewContactUs from './pages/ViewContactUs';
+import Vedeo from './Components/Common/Vedeo';
+import CartPage from './pages/product/CartPage';
 
 
 
@@ -79,6 +81,7 @@ function App() {
     <Route path="/about" element={<AboutUsF/>} />
     <Route path="/contact" element={<ContactUs/>} />
     <Route path="/vcontact" element={<ViewContactUs/>} />
+    <Route path="/video" element={<Vedeo/>} />
     
 
     <Route element={<UserRoute />}>
@@ -124,10 +127,12 @@ function App() {
     <Route path="/senda" element={<SendAnnouncement/>} />
     <Route path="/viewa" element={<ViewAnnouncements/>} />
     <Route path="/viewaa" element={<ViewAnnouncementsbyadmin/>} />
+    <Route path="/cart" element={<CartPage/>} />
+    <Route path='/ml'element={(<CropYieldPredictor/>)}/>
     </Route>
     
    
-    <Route path='/ml'element={(<CropYieldPredictor/>)}/>
+   
     <Route element={<AdminRoute />}>
     <Route path='/adminhome'element={(<Adminhome/>)}/>
     <Route path='/complaintList'element={(<ComplaintList/>)}/>

@@ -2,6 +2,8 @@ import React, { useEffect, useState } from "react";
 import axios from "axios";
 import NavBar from "../../Components/Layout/NavBar";
 import { Link } from "react-router-dom";
+import {  FaFacebook, FaInstagram, FaTwitter } from "react-icons/fa";
+
 
 const UserOrders = () => {
   const [userOrders, setUserOrders] = useState([]);
@@ -10,9 +12,11 @@ const UserOrders = () => {
   const [feedbackText, setFeedbackText] = useState({});
   const [feedbackRating, setFeedbackRating] = useState({});
   const [editingFeedbackId, setEditingFeedbackId] = useState(null);
-  const [editedFeedback, setEditedFeedback] = useState({ text: "", rating: "" });
+  const [editedFeedback, setEditedFeedback] = useState({
+    text: "",
+    rating: "",
+  });
 
-  // Complaint states
   const [complaintVisible, setComplaintVisible] = useState({});
   const [complaintData, setComplaintData] = useState({
     description: "",
@@ -48,7 +52,41 @@ const UserOrders = () => {
         );
 
         if (response.data.length > 0) {
-          setUserOrders(response.data);
+          const sortedOrders = [...response.data].sort((a, b) => {
+            const getTimestamp = (order) => {
+              const dateString = order.date || order.createdAt;
+              return dateString ? new Date(dateString).getTime() : Date.now();
+            };
+
+            const timestampA = getTimestamp(a);
+            const timestampB = getTimestamp(b);
+
+            console.log(`Sorting comparison:
+              Order A (${a._id}): 
+                date: ${a.date}, 
+                createdAt: ${a.createdAt}, 
+                timestamp: ${timestampA}
+              Order B (${b._id}): 
+                date: ${b.date}, 
+                createdAt: ${b.createdAt}, 
+                timestamp: ${timestampB}
+              Difference: ${timestampB - timestampA}`);
+
+            return timestampB - timestampA;
+          });
+
+          console.log(
+            "Final sorted orders:",
+            sortedOrders.map((o) => ({
+              id: o._id,
+              product: o.productName,
+              date: o.date,
+              createdAt: o.createdAt,
+              status: o.status,
+            }))
+          );
+
+          setUserOrders(sortedOrders);
         } else {
           setError("No orders found for this user.");
         }
@@ -61,9 +99,68 @@ const UserOrders = () => {
     fetchUserOrders();
   }, []);
 
-  const statusSteps = ["Order placed", "In transit", "Out of delivery", "delivered"];
+  const statusSteps = [
+    "Order placed",
+    "In transit",
+    "Out of delivery",
+    "delivered",
+  ];
 
-  // Feedback handlers
+  const handlePrintOrders = () => {
+    const printContent = document.getElementById("orders-to-print").innerHTML;
+    const originalContent = document.body.innerHTML;
+
+    document.body.innerHTML = `
+      <style>
+        @media print {
+          body {
+            font-family: Arial, sans-serif;
+            padding: 20px;
+          }
+          .print-header {
+            text-align: center;
+            margin-bottom: 20px;
+          }
+          .print-order {
+            border: 1px solid #ddd;
+            padding: 15px;
+            margin-bottom: 20px;
+            page-break-inside: avoid;
+          }
+          .print-order img {
+            max-width: 150px;
+            max-height: 150px;
+          }
+          .no-print {
+            display: none;
+          }
+          .status-container {
+            margin: 15px 0;
+          }
+          .status-step {
+            display: inline-block;
+            text-align: center;
+            margin: 0 10px;
+          }
+          .status-dot {
+            width: 20px;
+            height: 20px;
+            border-radius: 50%;
+            display: inline-block;
+            margin-bottom: 5px;
+          }
+        }
+      </style>
+      <div class="print-header">
+        <h1>Your Order History</h1>
+      </div>
+      ${printContent}
+    `;
+
+    window.print();
+    document.body.innerHTML = originalContent;
+  };
+
   const handleAddFeedback = (orderId) => {
     setFeedbackVisible((prev) => ({ ...prev, [orderId]: true }));
   };
@@ -129,7 +226,11 @@ const UserOrders = () => {
             ...order,
             feedbacks: order.feedbacks.map((fb) =>
               fb._id === feedbackId
-                ? { ...fb, text: editedFeedback.text, rating: editedFeedback.rating }
+                ? {
+                    ...fb,
+                    text: editedFeedback.text,
+                    rating: editedFeedback.rating,
+                  }
                 : fb
             ),
           }))
@@ -141,7 +242,6 @@ const UserOrders = () => {
     }
   };
 
-  // Complaint handlers
   const handleAddComplaint = (orderId) => {
     const userComplaint = userOrders
       .find((order) => order._id === orderId)
@@ -165,7 +265,11 @@ const UserOrders = () => {
   };
 
   const handleSubmitComplaint = async (orderId, productId) => {
-    if (!complaintData.description || !complaintData.category || !complaintData.resolutionRequest) {
+    if (
+      !complaintData.description ||
+      !complaintData.category ||
+      !complaintData.resolutionRequest
+    ) {
       alert("Please fill all required fields.");
       return;
     }
@@ -177,7 +281,6 @@ const UserOrders = () => {
     formData.append("userId", localStorage.getItem("userid"));
     formData.append("productId", productId);
 
-    // Append the image file
     if (complaintData.evidence) {
       formData.append("evidence", complaintData.evidence);
     }
@@ -211,7 +314,9 @@ const UserOrders = () => {
       }
     } catch (err) {
       console.error("Error submitting complaint:", err);
-      alert("You have already submitted a complaint for this product. If you want to know about your complaint, please go to your complaints.");
+      alert(
+        "You have already submitted a complaint for this product. If you want to know about your complaint, please go to your complaints."
+      );
     }
   };
 
@@ -242,9 +347,7 @@ const UserOrders = () => {
           prevOrders.map((order) => ({
             ...order,
             complaints: order.complaints.map((comp) =>
-              comp._id === complaintId
-                ? { ...comp, ...editedComplaint }
-                : comp
+              comp._id === complaintId ? { ...comp, ...editedComplaint } : comp
             ),
           }))
         );
@@ -255,7 +358,6 @@ const UserOrders = () => {
     }
   };
 
-  // Function to render rating as golden stars
   const renderRatingStars = (rating) => {
     return "⭐".repeat(rating);
   };
@@ -268,8 +370,14 @@ const UserOrders = () => {
       <h1 style={styles.headerStyle}>Your Orders</h1>
       {error && <p style={styles.error}>{error}</p>}
 
+      <div className="no-print" style={{ marginBottom: "20px" }}>
+        <button onClick={handlePrintOrders} style={styles.printButton}>
+          Print Orders
+        </button>
+      </div>
+
       {userOrders.length > 0 ? (
-        <div style={styles.cardsContainer}>
+        <div id="orders-to-print" style={styles.cardsContainer}>
           {userOrders.map((order, index) => {
             const userFeedback = Array.isArray(order.feedbacks)
               ? order.feedbacks.find(
@@ -287,20 +395,32 @@ const UserOrders = () => {
 
             return (
               <div key={index} style={styles.card}>
+                <h3>{order.productName}</h3>
                 <img
-                  src={`http://localhost:7000/${order.image.replace(/^\//, "")}`}
+                  src={`http://localhost:7000/${order.image.replace(
+                    /^\//,
+                    ""
+                  )}`}
                   alt={order.productName}
                   style={styles.productImage}
                 />
-                <h3>{order.productName}</h3>
                 <p style={styles.description}>{order.discription}</p>
-                <p><strong>Quantity:</strong> {order.quantity}</p>
-                <p><strong>Address:</strong> {order.address}</p>
-                <p><strong>Phone:</strong> {order.userPhone}</p>
-                <p><strong>Price:</strong> {order.price}</p>
+                <p>
+                  <strong>Quantity:</strong> {order.quantity}
+                </p>
+                <p>
+                  <strong>Address:</strong> {order.address}
+                </p>
+                <p>
+                  <strong>Phone:</strong> {order.userPhone}
+                </p>
+                <p>
+                  <strong>Price:</strong> {order.discountedPrice}
+                </p>
                 <div style={styles.statusContainer}>
                   {statusSteps.map((step, idx) => {
-                    const isCompleted = idx <= statusSteps.indexOf(order.status);
+                    const isCompleted =
+                      idx <= statusSteps.indexOf(order.status);
                     return (
                       <div key={idx} style={styles.statusStep}>
                         <div
@@ -310,7 +430,9 @@ const UserOrders = () => {
                             borderColor: isCompleted ? "darkgreen" : "#ccc",
                           }}
                         >
-                          {isCompleted && <div style={styles.innerWhiteDot}></div>}
+                          {isCompleted && (
+                            <div style={styles.innerWhiteDot}></div>
+                          )}
                         </div>
                         <span style={styles.statusText}>{step}</span>
                       </div>
@@ -388,7 +510,9 @@ const UserOrders = () => {
                                   {renderRatingStars(userFeedback.rating)}
                                 </p>
                                 <button
-                                  onClick={() => handleEditFeedback(userFeedback)}
+                                  onClick={() =>
+                                    handleEditFeedback(userFeedback)
+                                  }
                                   style={styles.button}
                                 >
                                   Edit Feedback
@@ -428,10 +552,7 @@ const UserOrders = () => {
                             </select>
                             <button
                               onClick={() =>
-                                handleSubmitFeedback(
-                                  order._id,
-                                  order.productId
-                                )
+                                handleSubmitFeedback(order._id, order.productId)
                               }
                               style={styles.button}
                             >
@@ -475,7 +596,9 @@ const UserOrders = () => {
                           }
                           style={styles.select}
                         >
-                          <option value="Damaged Product">Damaged Product</option>
+                          <option value="Damaged Product">
+                            Damaged Product
+                          </option>
                           <option value="Late Delivery">Late Delivery</option>
                           <option value="Wrong Product">Wrong Product</option>
                           <option value="Poor Quality">Poor Quality</option>
@@ -543,11 +666,19 @@ const UserOrders = () => {
                               }
                               style={styles.select}
                             >
-                              <option value="Damaged Product">Damaged Product</option>
-                              <option value="Late Delivery">Late Delivery</option>
-                              <option value="Wrong Product">Wrong Product</option>
+                              <option value="Damaged Product">
+                                Damaged Product
+                              </option>
+                              <option value="Late Delivery">
+                                Late Delivery
+                              </option>
+                              <option value="Wrong Product">
+                                Wrong Product
+                              </option>
                               <option value="Poor Quality">Poor Quality</option>
-                              <option value="Missing Items">Missing Items</option>
+                              <option value="Missing Items">
+                                Missing Items
+                              </option>
                               <option value="Others">Others</option>
                             </select>
                             <select
@@ -600,7 +731,7 @@ const UserOrders = () => {
                               <strong>Category:</strong>{" "}
                               {userComplaint.category}
                             </p>
-                            
+
                             <p>
                               <strong>Resolution Request:</strong>{" "}
                               {userComplaint.resolutionRequest}
@@ -625,19 +756,63 @@ const UserOrders = () => {
         !error && <p>Loading orders...</p>
       )}
 
-      <footer style={styles.footerStyle}>
-        <p>&copy; 2025 EcoHarvest. All rights reserved.</p>
-        <p>
-          Follow us on
-          <a href="https://facebook.com" style={styles.linkStyle}> Facebook</a>,
-          <a href="https://instagram.com" style={styles.linkStyle}> Instagram</a>, and
-          <a href="https://twitter.com" style={styles.linkStyle}> Twitter</a>.
-        </p>
-        <p>
-          <Link to="/contact" style={styles.linkStyle}>Contact Us</Link> |
-          <Link to="/about" style={styles.linkStyle}> About Us</Link>
-        </p>
-      </footer>
+     
+                 <footer style={{
+                 backgroundColor: "#2c3e50",
+                 color: "#ecf0f1",
+                 padding: "50px 0 20px",
+                 marginTop: "50px"
+               }}>
+                 <div className="container">
+                   <div className="row">
+                     <div className="col-md-4 mb-4">
+                       <h5 style={{ 
+                         fontFamily: "'Playfair Display', serif",
+                         marginBottom: "20px",
+                         fontWeight: "600"
+                       }}>
+                         EcoHarvest
+                       </h5>
+                       <p style={{ lineHeight: "1.6" }}>
+                         Bringing people together through the joy of organic living and sharing high-quality products from around the world.
+                       </p>
+                     </div>
+                     <div className="col-md-2 mb-4">
+                       <h6 style={{ fontWeight: "600", marginBottom: "15px" }}>Explore</h6>
+                       <ul style={{ listStyle: "none", padding: "0" }}>
+                         <li style={{ marginBottom: "8px" }}><Link to="/" style={{ color: "#bdc3c7", textDecoration: "none", ":hover": { color: "#fff" } }}>Home</Link></li>
+                         <li style={{ marginBottom: "8px" }}><Link to="/productlist" style={{ color: "#bdc3c7", textDecoration: "none", ":hover": { color: "#fff" } }}>Products</Link></li>
+                         <li style={{ marginBottom: "8px" }}><Link to="/about" style={{ color: "#bdc3c7", textDecoration: "none", ":hover": { color: "#fff" } }}>About</Link></li>
+                         <li style={{ marginBottom: "8px" }}><Link to="/contact" style={{ color: "#bdc3c7", textDecoration: "none", ":hover": { color: "#fff" } }}>Contact</Link></li>
+                       </ul>
+                     </div>
+                     <div className="col-md-3 mb-4">
+                       <h6 style={{ fontWeight: "600", marginBottom: "15px" }}>Legal</h6>
+                       <ul style={{ listStyle: "none", padding: "0" }}>
+                         <li style={{ marginBottom: "8px" }}>Eco-friendly Commitment</li>
+                         <li style={{ marginBottom: "8px" }}>Sustainability Policy</li>
+                         <li style={{ marginBottom: "8px" }}>Organic Certification</li>
+                       </ul>
+                     </div>
+                     <div className="col-md-3 mb-4">
+                       <h6 style={{ fontWeight: "600", marginBottom: "15px" }}>Connect With Us</h6>
+                       <div className="social-icons" style={{ fontSize: "1.5rem", marginBottom: "1rem" }}>
+                         <a href="https://facebook.com" style={{ color: "#bdc3c7", marginRight: "15px", ":hover": { color: "#3b5998" } }}><FaFacebook /></a>
+                         <a href="https://instagram.com" style={{ color: "#bdc3c7", marginRight: "15px", ":hover": { color: "#e4405f" } }}><FaInstagram /></a>
+                         <a href="https://twitter.com" style={{ color: "#bdc3c7", ":hover": { color: "#1da1f2" } }}><FaTwitter /></a>
+                       </div>
+                      
+                       
+                     </div>
+                   </div>
+                   <hr style={{ borderColor: "#34495e", margin: "20px 0" }} />
+                   <div className="text-center" style={{ fontSize: "0.9rem" }}>
+                     <p style={{ margin: "0" }}>
+                       &copy; {new Date().getFullYear()} EcoHarvest. All rights reserved.
+                     </p>
+                   </div>
+                 </div>
+               </footer>
     </div>
   );
 };
@@ -652,16 +827,16 @@ const styles = {
     backgroundColor: "#f9f9f9",
   },
   footerStyle: {
-    backgroundColor: '#333',
-    color: '#fff',
-    textAlign: 'center',
-    padding: '20px',
-    marginTop: 'auto',
-    width: '100%',
+    backgroundColor: "#333",
+    color: "#fff",
+    textAlign: "center",
+    padding: "20px",
+    marginTop: "auto",
+    width: "100%",
   },
   linkStyle: {
-    color: '#4caf50',
-    textDecoration: 'none',
+    color: "#4caf50",
+    textDecoration: "none",
   },
   headerStyle: {
     backgroundColor: "rgba(0, 0, 0, 0.5)",
@@ -689,7 +864,6 @@ const styles = {
     padding: "20px",
     boxShadow: "0 4px 8px rgba(0, 0, 0, 0.2)",
     width: "100%",
-    textAlign: "center",
   },
   productImage: {
     width: "150px",
@@ -768,6 +942,16 @@ const styles = {
     textDecoration: "none",
     margin: "5px",
   },
+  printButton: {
+    padding: "10px 20px",
+    backgroundColor: "#2196F3",
+    color: "white",
+    border: "none",
+    borderRadius: "5px",
+    cursor: "pointer",
+    textDecoration: "none",
+    margin: "5px",
+  },
   textarea: {
     width: "100%",
     marginBottom: "10px",
@@ -792,5 +976,4 @@ const styles = {
     margin: "5px",
   },
 };
-
 export default UserOrders;
